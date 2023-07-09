@@ -15,6 +15,7 @@ class PermissionController extends Controller
     public function index()
     {
         $permission = Permission::all();
+        // dd($permission);
         return view('permissions.index', compact('permission'));
     }
 
@@ -36,7 +37,13 @@ class PermissionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required',
+        ]);
+
+        $permission = Permission::create(['name' => $request->name]);
+
+        return redirect()->route('permissions')->with('success', 'Permission berhasil ditambahkan');
     }
 
     /**
@@ -47,7 +54,8 @@ class PermissionController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = Permission::find($id);
+        return response()->json($data);
     }
 
     /**
@@ -68,9 +76,14 @@ class PermissionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required',
+        ]);
+
+        $data = Permission::where('id', $request->id)->update(['name' => $request->name]);
+        return redirect()->route('permissions')->with('success', 'Data berhasil diubah');
     }
 
     /**
@@ -81,6 +94,9 @@ class PermissionController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $delete = Permission::find($id);
+        $delete->delete();
+
+        return redirect()->route('permissions')->with('success', 'Data berhasil dihapus');
     }
 }

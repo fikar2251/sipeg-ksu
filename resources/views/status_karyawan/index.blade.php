@@ -4,7 +4,7 @@
     <div class="container-fluid">
         <div class="block-header">
             <h2>
-                PERMISSION
+                STATUS KARYAWAN
                 {{-- <small>Taken from <a href="https://datatables.net/" target="_blank">datatables.net</a></small> --}}
             </h2>
         </div>
@@ -15,7 +15,7 @@
                     <br>
                     <div class="row">
                         <div class="col-md-5">
-                            <a style="margin-left: 7.5%" data-toggle="modal" data-target="#defaultModal" title="TAMBAH PERMISSION" href="javascript:void(0);" name="submit" class="btn btn-success waves-effect"><i class="material-icons">add</i><span>TAMBAH PERMISSION</span></a>
+                            <a style="margin-left: 7.5%" data-toggle="modal" data-target="#defaultModal" title="TAMBAH STATUS KARYAWAN" href="javascript:void(0);" name="submit" class="btn btn-success waves-effect"><i class="material-icons">add</i><span>TAMBAH STATUS KARYAWAN</span></a>
                         </div>
                         {{-- <form id="form_validation" method="post" action="">
                             <div class="col-sm-2">
@@ -70,7 +70,17 @@
                                     <tr>
                                         <th width="5%">No</th>
                                         <th>Nama</th>
-                                        <th>Aksi</th>
+                                        <th>Uang Makan</th>
+                                        <th>Uang Transport</th>
+                                        <th>Gaji Pokok</th>
+                                        <th>Premi BPJS Kesehatan Maximal</th>
+                                        <th>Uang Makan</th>
+                                        <th>Uang Makan</th>
+                                        <th>Uang Makan</th>
+                                        <th>Uang Makan</th>
+                                        <th>Uang Makan</th>
+                                        <th>Uang Makan</th>
+                                        <th>Uang Makan</th>
                                         {{-- <th>Salary</th> --}}
                                     </tr>
                                 </thead>
@@ -206,25 +216,4 @@
         </div>
     </div>
 </section>
-
 @endsection
-@push('custom-scripts')
-<script>
-    $(document).ready(function(){
-         $(document).on('click','.editbtn',function(){
-             var book_id = $(this).attr('data-id');
-             console.log(book_id);
-            //  alert(book_id)
-            $.ajax({
-               type:"GET",
-               url:"/permissions/"+book_id,
-               success:function(response){
-                console.log(response);
-                  $('#permissionId').val(response.id);
-                  $('#permissionName').val(response.name);
-               }
-            });
-         });
-      });
-</script>
-@endpush

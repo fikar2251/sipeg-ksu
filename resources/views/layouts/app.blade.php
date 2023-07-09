@@ -3,8 +3,9 @@
 
 <head>
     @include('layouts.header')
-    
+
 </head>
+
 <body class="theme-red">
     <!-- Page Loader -->
     <!--
@@ -23,27 +24,28 @@
             <p>Harap menunggu sebentar...</p>
         </div>
     </div>
-	-->
+ -->
 
     <!-- #END# Page Loader -->
     <!-- Overlay For Sidebars -->
     <div class="overlay"></div>
     <!-- #END# Overlay For Sidebars -->
-   @include('layouts.navbar')
+    @include('layouts.navbar')
     <section>
-       @include('layouts.sidebar')
+        @include('layouts.sidebar')
     </section>
 
-    
-        @yield('content')
- 
+
+    @yield('content')
+
 
 
 
     <!-- Bootstrap Material Datetime Picker Plugin Js
 <script src="plugins/JqueryACtextbox/jquery-1.10.2.js"></script>-->
-   
-    <script src="asset/plugins/jquery/jquery.min.js"></script>
+
+<script src="asset/plugins/jquery/jquery.min.js"></script>
+
 
     <!-- Bootstrap Core Js -->
     <script src="asset/plugins/bootstrap/js/bootstrap.js"></script>
@@ -90,8 +92,8 @@
 
     <!-- Custom Js -->
     <script src="asset/js/admin.js"></script>
-   <script src="asset/js/pages/index.js"></script>
-   {{-- <script src="asset/js/pages/forms/advanced-form-elements.js"></script> --}}
+    <script src="asset/js/pages/index.js"></script>
+    {{-- <script src="asset/js/pages/forms/advanced-form-elements.js"></script> --}}
 
     <!-- Demo Js -->
     <script src="asset/js/demo.js"></script>
@@ -99,8 +101,8 @@
     <!-- Dropzone Plugin Js -->
     <script src="asset/plugins/dropzone/dropzone.js"></script>
 
-     <!-- Bootstrap Colorpicker Js -->
-     <script src="asset/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js"></script>
+    <!-- Bootstrap Colorpicker Js -->
+    <script src="asset/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js"></script>
 
     <!-- Input Mask Plugin Js -->
     <script src="asset/plugins/jquery-inputmask/jquery.inputmask.bundle.js"></script>
@@ -153,12 +155,28 @@
     </script> --}}
     {{-- <script src="asset/js/pages/forms/advanced-form-elements.js"></script>  --}}
     <script src="asset/js/pages/ui/modals.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <!--<script type="text/javascript" src="asset/plugins/autoformat/jquery-3.2.1.slim.min.js"></script>-->
     {{-- <script type="text/javascript" src="asset/plugins/autoformat/simple.money.format.js"></script> --}}
     {{-- <script type="text/javascript">
         $('.money').simpleMoneyFormat();
     </script> --}}
+    @stack('custom-scripts')
 
+    <script>
+      
+
+        <?php if (session('success')) { ?>
+            toastr.success("<?= session('success') ?>");
+        <?php } ?>
+        <?php if (session('sweet-warning')) { ?>
+            toastr.warning("<?= session('warning') ?>");
+        <?php } ?>
+        <?php if (session('error')) { ?>
+            toastr.error("<?= session('error') ?>");
+        <?php } ?> 
+    </script>
     <!-- <script type="text/javascript" src="../../js/dhtmlwindow.js"></script> -->
+</body>
 
+</html>

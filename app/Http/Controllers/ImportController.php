@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\HitungGaji;
 use App\Imports\AbsensiImport;
 use App\Imports\MultiSheetSelector;
 use App\Imports\UsersImport;
+use App\Models\DetailAbsen;
 use App\Models\Import;
+use App\Models\Pegawai;
+use App\Models\StatusKaryawan;
+use App\Models\Umr;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -32,39 +39,55 @@ class ImportController extends Controller
     public function create(Request $request)
     {
 
-        // $new_file_name = $request->file('excel')->getClientOriginalName();
-        // $move = $request->file('excel')->move(storage_path() . '/epdk_import/', $new_file_name);
-        // $path = storage_path() . '/epdk_import/' . $new_file_name;
-        // dd(IOFactory::identify($path));
-        // $objPHPExcel = IOFactory::load($path);
 
-        // $spreadsheet = new Spreadsheet();
-        // $spreadsheet->getActiveSheet()->fromArray($objPHPExcel->getActiveSheet()->toArray());
-
-        // $newFilePath = str_replace('.xls', '.xlsx', $path);
-        // $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        // $writer->save($newFilePath);
-
-        // return $newFilePath;
-
-        $data = Excel::import(new AbsensiImport, $request->file('excel')->store('temp'));
-        dd($data);
-
-        // (new UsersImport)->import($request->file('excel'), 'local', \Maatwebsite\Excel\Excel::XLS)
-        // $array = (new AbsensiImport)->import($request->file('excel'), 'local', \Maatwebsite\Excel\Excel::XLS);
-        // dd($request->file('excel'));
-        // Excel::import(new MultiSheetSelector(), $request->file('excel'));
-        // echo "<pre>";
-        // print_r()
-        // foreach ($data as $key => $value) {
-        //     dd($value);
-
-        // }
-        // $array = (new AbsensiImport)->toArray($path);
-
-        // return redirect()->back();
+        $data = Excel::toArray([], $request->file('excel')->store('temp'), null, null, null, true)[0];
+        $date = $data[0];
+        $count_data = count($data);
+        $times = array_slice($data, 1, $count_data);
+        $jum = count($date);
+        foreach ($times as $value) {
+            for ($i = 7; $i < $jum - 1; $i++) {
+                # code...
+                if (!empty($date[$i]) && $value[1] != 'NIP') {
+                    $datas[] = [
+                        'tgl'   => $date[$i],
+                        'in' => $value[$i],
+                        'out' => $value[$i + 1],
+                        'nik' => $value[1]
+                    ];
+                }
+            }
+            $year = Carbon::parse($date[$i])->format("Y");
+            $this->hitungGaji(22, '001', $year);
+        }
+        try {
+            foreach ($datas as $key => $value) {
+                $bulan = Carbon::parse($value['tgl'])->format("m");
+                $tahun = Carbon::parse($value['tgl'])->format("Y");
+                $tanggal = Carbon::parse($value['tgl'])->format("d");
+                // dd($bulan);
+                if ($value['in'] !== '00:00') {
+                    $insert =  DetailAbsen::create([
+                        'kode_absen' => $value['nik'],
+                        'bulan' => $bulan,
+                        'tahun' => $tahun,
+                        'tanggal' => $tanggal,
+                        'masuk' => $value['in'],
+                        'keluar' => $value['out'],
+                    ]);
+                }
+            }
+            return redirect()->back()->with('success', 'Import success!');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
+        }
     }
 
+    public function hitungGaji($kehadiran, $kode_absen, $year)
+    {
+        $pegawai = Pegawai::where('kode_absen', $kode_absen)->first();
+        $status_karyawan = StatusKaryawan::where('id', $pegawai->status_karyawan)->first();
+    }
     /**
      * Store a newly created resource in storage.
      *

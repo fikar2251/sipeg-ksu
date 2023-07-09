@@ -16,7 +16,7 @@ use Maatwebsite\Excel\Concerns\WithUpserts;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 
 HeadingRowFormatter::default('none');
-class AbsensiImport implements ToModel, WithBatchInserts, WithHeadingRow
+class AbsensiImport implements ToCollection, WithBatchInserts, WithHeadingRow
 {
     use Importable;
     /**
@@ -43,7 +43,7 @@ class AbsensiImport implements ToModel, WithBatchInserts, WithHeadingRow
     // }
     public function headingRow(): int
     {
-        return 1;
+        return 0;
     }
     public function collection(Collection $rows)
     {
@@ -52,11 +52,25 @@ class AbsensiImport implements ToModel, WithBatchInserts, WithHeadingRow
         // {
         //     return 3;
         // }
-        foreach ($rows as $row) {
-            // dd($row[7]);
+        $count = 1;
 
-            // Import::create([]);
+        // foreach ($rows[0] as $key => $row) {
+        $total = count($rows[0]);
+        $row = $rows[0];
+        foreach ($rows as $key => $val) {
+            $tot = count($rows);
+            for ($j = 3; $j < $tot; $j++) {
+                $data[] = [
+                    'tanggal' => $row,
+                ];
+            }
         }
+        dd($data);
+
+        $count++;
+        // }
+        // dd($data);
+        die;
     }
     public function model(array $row)
     {
@@ -66,6 +80,7 @@ class AbsensiImport implements ToModel, WithBatchInserts, WithHeadingRow
         // if (!is_numeric($row[3])) {
         //   
         // }
+        // dd($row);
         // }
         // if (is_numeric($row[2])) {
         //     $jam_masuk = $row[2];

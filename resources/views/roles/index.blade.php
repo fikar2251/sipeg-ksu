@@ -19,10 +19,10 @@
                                     style="margin-left: 7.5%" title="TAMBAH ROLE" name="submit"
                                     class="btn btn-success waves-effect"><i class="material-icons">add</i><span>TAMBAH
                                         ROLE</span></button>
-                               
+
 
                             </div>
-                            
+
                             {{-- <form id="form_validation" method="post" action="">
                             <div class="col-sm-2">
                                 <div class="form-group form-float">
@@ -67,11 +67,12 @@
                         </ul>
                     </div> --}}
                         <div class="body">
-                             @if ($message = Session::get('success'))
-                             <div class="alert bg-green alert-dismissible" role="alert">
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                {{$message}}
-                            </div>
+                            @if ($message = Session::get('success'))
+                                <div class="alert bg-green alert-dismissible" role="alert">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                            aria-hidden="true">&times;</span></button>
+                                    {{ $message }}
+                                </div>
                             @endif
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
@@ -79,6 +80,7 @@
                                         <tr>
                                             <th width="5%">No</th>
                                             <th>Nama</th>
+                                            <th>Permission</th>
                                             <th>Aksi</th>
                                             {{-- <th>Salary</th> --}}
                                         </tr>
@@ -88,12 +90,18 @@
                                             <tr>
                                                 <td> {{ $loop->iteration }} </td>
                                                 <td> {{ $item->name }} </td>
+                                                <td>
+                                                    @foreach ($item->getPermissionNames() as $perms)
+                                                        {{ $perms }},
+                                                    @endforeach
+                                                </td>
                                                 <td class="text-center" style="width: 20%">
-                                                    <a title="UBAH ROLE" href="#"><i class="material-icons"
+                                                    <a data-id="{{$item->id}}" class="editbtn" title="UBAH ROLE" data-target="#editModal" data-toggle="modal" href="#"><i class="material-icons"
                                                             aria-hidden="true">edit</i></a>
                                                     <a title="HAPUS ROLE" href="#" role="button" class="hapusRole"
                                                         data-id="" data-toggle="modal"><i class="material-icons"
                                                             aria-hidden="true">delete</i></a>
+                                                  
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -160,4 +168,100 @@
                 </div>
             </div>
         </div>
-</section @endsection
+        <div class="modal fade" id="editModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="defaultModalLabel">Edit Data
+                            Roles</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST"
+                            action="{{ route('update-permissions') }}">
+                            @csrf
+                            <div class="row clearfix">
+                                <div
+                                    class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            <input type="text"
+                                                id="roleName"
+                                                class="form-control"
+                                                name="name">
+                                            <input type="hidden"
+                                                id="roleId"
+                                                class="form-control"
+                                                name="id" value="">
+                                            {{-- <label class="form-label">Nama</label> --}}
+                                        </div>
+                                    </div>
+                                </div>
+                                {{-- <div class="col-md-6">
+                                    <select class="form-control show-tick"
+                                        multiple name="permission[]">
+                                        <option selected disabled>-- Pilih
+                                            Permission --</option>
+                                        @foreach ($permissions as $permission)
+                                            <option
+                                                value="{{ $permission->id }}">
+                                                {{ $permission->name }}</option>
+                                        @endforeach
+                                    </select>
+
+                                </div> --}}
+                                {{-- <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+                                        <div class="form-group form-float">
+                                            <div class="form-line">
+                                                <input type="password" class="form-control">
+                                                <label class="form-label">Password</label>
+                                            </div>
+                                        </div>
+                                    </div> --}}
+                                {{-- <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                        <input type="checkbox" id="remember_me_5" class="filled-in">
+                                        <label for="remember_me_5">Remember Me</label>
+                                        <button type="button" class="btn btn-primary btn-lg m-l-15 waves-effect">LOGIN</button>
+                                    </div> --}}
+                            </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        {{-- <button type="button" class="btn btn-success waves-effect"><i class="material-icons me-3">save</i>SIMPAN</button> --}}
+                        <button type="submit" name="submit"
+                            class="btn btn-success waves-effect"> <i
+                                class="material-icons">save</i><span>SIMPAN</span></button>
+                        {{-- <button type="button" name="submit" class="btn btn-success waves-effect"><i class="material-icons">add</i><span>TAMBAH ROLE</span></button> --}}
+                        <button type="button"
+                            class="btn btn-danger waves-effect"
+                            data-dismiss="modal"> <i
+                                class="material-icons">close</i><span>TUTUP</span></button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+</section 
+@endsection
+@push('custom-scripts')
+    <script>
+        $(document).ready(function(){
+             $(document).on('click','.editbtn',function(){
+                {{-- alert('Please enter') --}}
+                 var book_id = $(this).attr('data-id');
+                 console.log(book_id);
+                //  alert(book_id)
+                $.ajax({
+                   type:"GET",
+                   url:"/roles/"+book_id,
+                   success:function(response){
+                    console.log(response);
+                      $('#roleId').val(response.id);
+                      $('#roleName').val(response.name);
+                   }
+                });
+             });
+             
+          });
+    </script>
+
+@endpush

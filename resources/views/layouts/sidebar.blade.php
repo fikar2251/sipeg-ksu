@@ -89,6 +89,35 @@
                     </li>
                 </ul>
             </li>
+
+            <li @class(['active' => request()->is('roles') || request()->is('permissions') || request()->is('users')]) >
+                <a href="javascript:void(0);" class="menu-toggle">
+                    <i class="material-icons">dashboard</i>
+                    <span>Master</span>
+                </a>
+                <ul class="ml-menu">
+                    <li @class(['active' => request()->is('roles')]) >
+                        <a href="{{route('roles')}}" >
+                            <span>Status Karyawan</span>
+                        </a>
+                    </li>
+                    <li @class(['active' => request()->is('permissions')])>
+                        <a href="{{route('permissions')}}" >
+                            <span>Jabatan</span>
+                        </a>
+                    </li>
+                    <li @class(['active' => request()->is('users')])>
+                        <a href="{{route('users')}}" >
+                            <span>PTKP</span>
+                        </a>
+                    </li>
+                    <li @class(['active' => request()->is('users')])>
+                        <a href="{{route('users')}}" >
+                            <span>PPH</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
          {{--    <li>
                 <a href="javascript:void(0);" class="menu-toggle">
                     <i class="material-icons">widgets</i>
