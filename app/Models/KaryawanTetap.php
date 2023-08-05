@@ -7,5 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class KaryawanTetap extends Model
 {
+    protected $table = 'pegawai';
+
+    protected $guarded = [];
+    public $timestamps = true;
     use HasFactory;
 }

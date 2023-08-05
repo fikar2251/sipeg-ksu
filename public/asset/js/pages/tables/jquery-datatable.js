@@ -1,14 +1,12 @@
 $(function () {
-    $('.js-basic-example').DataTable({
-        responsive: true
+    $(".js-basic-example").DataTable({
+        responsive: true,
     });
 
     //Exportable table
-    $('.js-exportable').DataTable({
-        dom: 'Bfrtip',
+    $(".js-exportable").DataTable({
+        dom: "Bfrtip",
         responsive: true,
-        buttons: [
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ]
+        buttons: ["copy", "csv", "excel", "pdf", "print"],
     });
 });

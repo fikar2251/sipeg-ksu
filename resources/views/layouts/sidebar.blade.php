@@ -3,11 +3,11 @@
     <!-- User Info -->
     <div class="user-info">
         <div class="image">
-            <img src="asset/images/fotoprofil/default.jpg" width="50" height="55" alt="User" />
+            <img src="{{asset('asset/images/fotoprofil/default.jpg')}}" width="50" height="55" alt="User" />
         </div>
         <div class="info-container">
-            <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">John Doe</div>
-            <div class="email">john.doe@example.com</div>
+            <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{Auth::user()->name}}</div>
+            <div class="email">{{Auth::user()->email}}</div>
             <div class="btn-group user-helper-dropdown">
                 <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">keyboard_arrow_down</i>
                 <ul class="dropdown-menu pull-right">
@@ -34,18 +34,18 @@
                     <span>Beranda</span>
                 </a>
             </li>
-            <li @class(['active' => request()->is('karyawanTetap') || request()->is('karyawanKontrak')]) >
+            <li @class(['active' => request()->is('karyawanTetap') || request()->is('karyawanKontrak') || request()->is('karyawanTetap/create') ||  request()->is('karyawanTetap/edit/*') || request()->is('karyawanKontrak/edit/*') || request()->is('karyawanKontrak/create')]) >
                 <a href="javascript:void(0);" class="menu-toggle">
                     <i class="material-icons">accessibility</i>
                     <span>Karyawan</span>
                 </a>
                 <ul  class="ml-menu">
-                    <li @class(['active' => request()->is('karyawanTetap')])>
+                    <li @class(['active' => request()->is('karyawanTetap') || request()->is('karyawanTetap/create') || request()->is('karyawanTetap/edit/*')])>
                         <a href="{{route('karyawantetap')}}" >
                             <span>Karyawan Tetap</span>
                         </a>
                     </li>
-                    <li @class(['active' => request()->is('karyawanKontrak')])>
+                    <li @class(['active' => request()->is('karyawanKontrak') || request()->is('karyawanKontrak/edit/*') || request()->is('karyawanKontrak/create')])>
                         <a href="{{route('karyawankontrak')}}" >
                             <span>Karyawan Kontrak</span>
                         </a>
@@ -60,13 +60,13 @@
                   <span>Import Excel</span>
                 </a>
               </li>
-            <li >
-                <a href="javascript:void(0);">
+            <li @class(['active' => request()->is('gajiAll')]) >
+                <a href="{{route('gajiAll')}}">
                     <i class="material-icons">attach_money</i>
                     <span>Penggajian</span>
                 </a>
             </li>
-            <li @class(['active' => request()->is('roles') || request()->is('permissions') || request()->is('users')]) >
+            {{-- <li @class(['active' => request()->is('roles') || request()->is('permissions') || request()->is('users')]) >
                 <a href="javascript:void(0);" class="menu-toggle">
                     <i class="material-icons">accessibility</i>
                     <span>User Management</span>
@@ -88,8 +88,8 @@
                         </a>
                     </li>
                 </ul>
-            </li>
-
+            </li> --}}
+{{-- 
             <li @class(['active' => request()->is('roles') || request()->is('permissions') || request()->is('users')]) >
                 <a href="javascript:void(0);" class="menu-toggle">
                     <i class="material-icons">dashboard</i>
@@ -117,7 +117,7 @@
                         </a>
                     </li>
                 </ul>
-            </li>
+            </li> --}}
          {{--    <li>
                 <a href="javascript:void(0);" class="menu-toggle">
                     <i class="material-icons">widgets</i>
