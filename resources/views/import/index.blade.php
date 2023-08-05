@@ -126,7 +126,11 @@
                         <form method="POST" action="{{ route('hitungSalary') }}">
                             @csrf
                             <div class="row clearfix">
+<<<<<<< HEAD
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6">
+=======
+                                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+>>>>>>> 8230160d165b92802d6ea27f58be22a129594877
                                     <div class="form-group form-float">
                                         <div>
                                             <input type="hidden" class="form-control" value="" id="nip"
@@ -141,13 +145,21 @@
                                             <label class="form-label">Adjustment</label>
                                         </div>
                                         <div class="row-clearfix" style="margin-top: 20px;">
+<<<<<<< HEAD
                                             <div class="col-sm-3">
+=======
+                                            <div class="col-sm-6">
+>>>>>>> 8230160d165b92802d6ea27f58be22a129594877
                                                 <div class="demo-switch-title">PENAMBAHAN</div>
                                                 <div class="switch">
                                                     <label><input type="checkbox" ><span class="lever switch-col-grey"></span></label>
                                                 </div>
                                             </div>
+<<<<<<< HEAD
                                             <div class="col-sm-9">
+=======
+                                            <div class="col-sm-6">
+>>>>>>> 8230160d165b92802d6ea27f58be22a129594877
                                                 <div class="demo-switch-title">PENGURANGAN</div>
                                                 <div class="switch">
                                                     <label><input type="checkbox" ><span class="lever switch-col-grey"></span></label>
