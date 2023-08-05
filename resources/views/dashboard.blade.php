@@ -15,7 +15,7 @@
                 </div>
                 <div class="content">
                     <div class="text">TOTAL KARYAWAN</div>
-                    <div class="number count-to" data-from="0" data-to="500" data-speed="15" data-fresh-interval="20"></div>
+                    <div class="number count-to" data-from="0" data-to="{{$total}}" data-speed="15" data-fresh-interval="20"></div>
                 </div>
             </div>
         </div>
@@ -26,7 +26,7 @@
                 </div>
                 <div class="content">
                     <div class="text">KARYAWAN TETAP</div>
-                    <div class="number count-to" data-from="0" data-to="257" data-speed="1000" data-fresh-interval="20"></div>
+                    <div class="number count-to" data-from="0" data-to="{{$tetap}}" data-speed="1000" data-fresh-interval="20"></div>
                 </div>
             </div>
         </div>
@@ -37,7 +37,7 @@
                 </div>
                 <div class="content">
                     <div class="text">KARYAWAN KONTRAK</div>
-                    <div class="number count-to" data-from="0" data-to="243" data-speed="1000" data-fresh-interval="20"></div>
+                    <div class="number count-to" data-from="0" data-to="{{$kontrak}}" data-speed="1000" data-fresh-interval="20"></div>
                 </div>
             </div>
         </div>
