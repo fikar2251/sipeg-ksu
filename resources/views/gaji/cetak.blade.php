@@ -110,7 +110,7 @@
                                     TUNJANGAN PERUSAHAAN</b></td>
                             <td style="width: 70px; "></td>
                             <td style=" "><b>:</b></td>
-                            <td style="width: 80px;"> <b>  @uang($gaji->gaji_pokok + $gaji->uang_makan + $gaji->uang_transport + $gaji->adjustment)</b> </td>
+                            <td style="width: 80px;"> <b> @if ($gaji->status_pegawai == 2) @uang($gaji->gaji_gross_kontrak + $gaji->premi_bpjs_kes + $gaji->premi_bpjs_ket + $gaji->premi_jp + $pph) @else @uang($gaji->gaji_pokok + $gaji->uang_makan + $gaji->uang_transport + $gaji->premi_bpjs_kes + $gaji->premi_bpjs_ket + $gaji->premi_jp + $pph) @endif</b> </td>
                         </tr>
                         <tr>
                             <td style="padding-bottom: 10px"><b>PERINCIAN</b></td>
@@ -130,7 +130,7 @@
                             <td style=" ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gaji Pokok</td>
                             <td></td>
                             <td style=" ">:</td>
-                            <td style=" ">1.000.000</td>
+                            <td style=" ">@uang($gaji->gaji_pokok)</td>
                             <td style="width: 180px ">Pinjaman</td>
                             <td style=" ">:</td>
                             <td style=" ">@if ($gaji->pinjaman != 0)
@@ -159,7 +159,7 @@
                         </tr>
                         <tr>
                             <td style=" ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Makan</td>
-                            <td style=" ">22 hari</td>
+                            <td style=" ">{{$gaji->jumlah_masuk}} hari</td>
                             <td style=" ">:</td>
                             <td>@uang($gaji->uang_makan) </td>
                             <td>BPJS Kesehatan
@@ -205,7 +205,7 @@
                             </td>
                             <td style=""></td>
                             <td style=" margin-top:; padding-bottom: 20px;"><b>:</b></td>
-                            <td style="margin-top:; padding-bottom: 20px;"><b> 1.440.000 </b></td>
+                            <td style="margin-top:; padding-bottom: 20px;"><b> @if ($gaji->status_pegawai == 2) @uang($gaji->gaji_gross_kontrak) @else @uang($gaji->gaji_pokok + $gaji->uang_makan + $gaji->uang_transport) @endif </b></td>
                         </tr>
                         <tr>
                             <td style="">

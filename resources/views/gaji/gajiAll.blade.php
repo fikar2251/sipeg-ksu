@@ -65,7 +65,9 @@
                                         @foreach ($data_tetap as $gaji)
                                         <tr>
                                             {{-- <td >{{$loop->iteration}}</td> --}}
-                                            <td>{{ $gaji->nama }}</td>
+                                            <td>
+                                                <a target="_blank" href="{{ route('detailGaji', $gaji->nip_pegawai) }}">{{ $gaji->nama }}</a>                                                
+                                            </td>
                                             <td>{{ $gaji->nip_pegawai }}</td>
                                             <td> @rupiah( $gaji->gaji_pokok + $gaji->uang_makan + $gaji->uang_transport)</td>
                                             <td>@rupiah($gaji->gaji_pokok)</td>
@@ -142,7 +144,7 @@
                                         @foreach ($data_kontrak as $gaji)
                                         <tr>
                                             {{-- <td >{{$loop->iteration}}</td> --}}
-                                            <td>{{ $gaji->nama }}</td>
+                                            <td> <a target="_blank" href="{{ route('detailGaji', $gaji->nip_pegawai) }}">{{ $gaji->nama }}</a> </td>
                                             <td>{{ $gaji->nip_pegawai }}</td>
                                             <td> @rupiah( $gaji->gaji_gross_kontrak)</td>
                                             <td>@rupiah($gaji->gaji_pokok)</td>

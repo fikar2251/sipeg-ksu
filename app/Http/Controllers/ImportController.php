@@ -158,20 +158,21 @@ class ImportController extends Controller
             ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
             ->where('gaji.nik_pegawai', $id)->first();
         // dd($data->gaji_pokok + $data->uang_makan + $data->uang_transport);
-        // dd($data->status_pegawai);
+        // dd($data);
         if ($data->status_pegawai == 1) {
             # code...
             $netto_gaji = HitungGaji::hitungTetap($id, $data->pinjaman, $data->adjustment, $data->supervisor);
             $total_gaji = $data->uang_makan + $data->uang_transport + $data->gaji_pokok + $data->adjustment + $data->supervisor;
             $pph = 0;
         } else {
-            $total_gaji = HitungGaji::hitungKontrak($id, $data->adjustment);
+            $total = HitungGaji::hitungKontrak($id, $data->adjustment);
             $pph = HitungGaji::hitungPPH($id, $data->thr);
-            $netto_gaji = $total_gaji - $pph;
-            $total = $data->gaji_gross_kontrak + $data->adjustment;
-            $total_gaji = $total - $data->pot_bjs_kes - $data->pot_bpjs_ket - $data->pot_jp;
+            // dd($pph);
+            $netto_gaji = abs($total - $pph);
+            $total_gaji = $data->gaji_gross_kontrak + $data->adjustment;
+            // dd($total);
+            // $total_gaji = $total - $data->pot_bjs_kes - $data->pot_bpjs_ket - $data->pot_jp;
         }
-        // dd($data->pph);
         // dd($data);
         // dd($data);
         return view('gaji.index', [
@@ -199,7 +200,7 @@ class ImportController extends Controller
         } else {
             $total_gaji = HitungGaji::hitungKontrak($id, $data->adjustment);
             $pph = HitungGaji::hitungPPH($id, $data->thr);
-            $netto_gaji = $total_gaji - $pph;
+            $netto_gaji = abs($total_gaji - $pph);
             $total = $data->gaji_gross_kontrak + $data->adjustment;
             $total_gaji = $total - $data->pot_bjs_kes - $data->pot_bpjs_ket - $data->pot_jp;
         }

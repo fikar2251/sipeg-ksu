@@ -7,7 +7,7 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <title>SIPEG KSU</title>
     <!-- Favicon-->
-    <link rel="icon" href="asset/favicon.png" type="image/x-icon">
+    <link rel="icon" href="public/asset/favicon.png" type="image/x-icon">
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet"
@@ -15,32 +15,32 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
 
     <!-- Bootstrap Core Css -->
-    <link href="asset/plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="public/asset/plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
 
     <!-- Waves Effect Css -->
-    <link href="asset/plugins/node-waves/waves.css" rel="stylesheet" />
+    <link href="public/asset/plugins/node-waves/waves.css" rel="stylesheet" />
 
     <!-- Animation Css -->
-    <link href="asset/plugins/animate-css/animate.css" rel="stylesheet" />
+    <link href="public/asset/plugins/animate-css/animate.css" rel="stylesheet" />
 
     <!-- JQuery DataTable Css -->
-    <link href="asset/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="public/asset/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
 
     <!-- Morris Chart Css-->
-    <link href="asset/plugins/morrisjs/morris.css" rel="stylesheet" />
+    <link href="public/asset/plugins/morrisjs/morris.css" rel="stylesheet" />
 
     <!-- Custom Css -->
-    <link href="asset/css/style.css" rel="stylesheet">
+    <link href="public/asset/css/style.css" rel="stylesheet">
 
     <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
-    <link href="asset/css/themes/all-themes.css" rel="stylesheet" />
+    <link href="public/asset/css/themes/all-themes.css" rel="stylesheet" />
 
 </head>
 
 <body class="login-page">
     <div class="login-box">
         <div class="logo">
-            <img src="asset/images/banner.png"width="100%">
+            <img src="public/asset/images/banner.png"width="100%">
 
         </div>
 
@@ -77,7 +77,7 @@
                         <div class="col-xs-8 p-t-5">
                             <input type="checkbox" name="rememberme" id="rememberme" class="filled-in chk-col-pink"
                                 <?php if (isset($_COOKIE['email'])) { ?> checked <?php } ?>>
-                            <label for="rememberme">Remember Me</label>
+                            <label for="rememberme">Remember Mes</label>
                         </div>
                         <div class="col-xs-4">
                             <button class="btn btn-block bg-pink waves-effect" type="submit"

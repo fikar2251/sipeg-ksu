@@ -34,7 +34,7 @@ class HitungGaji
         //netto gaji
 
         $total = $gaji->gaji_gross_kontrak + $adjustment;
-        $total_gaji = $total - $gaji->pot_bjs_kes - $gaji->pot_bpjs_ket - $gaji->pot_jp;
+        $total_gaji = $total - $gaji->pot_bpjs_kes - $gaji->pot_bpjs_ket - $gaji->pot_jp;
 
         return $total_gaji;
     }
@@ -52,13 +52,14 @@ class HitungGaji
         $tgl_masuk_kerja = Carbon::parse($data->tanggal_masuk_kerja)->format("m");
         // dd($tgl_masuk_kerja);
         //pengurangan
-        $biaya_jabatan = round($gaji_bruto * $data->persen_jabatan / 100, 0);
+        $biaya_jabatan = round($gaji_bruto * $data->persen_jabatan / 100);
         if ($biaya_jabatan > $data->nilai_jabatan) {
             $biaya_jabatan = $data->nilai_jabatan;
         }
         $peng_bpjs_ket = $data->pot_bpjs_ket + $data->pot_jp;
         $peng_bpjs_kes = $data->pot_bpjs_kes;
         $pengurangan = $biaya_jabatan + $peng_bpjs_kes + $peng_bpjs_ket;
+        
 
         //netto gaji disetahunkan
         if ($tgl_masuk_kerja == 02) {
@@ -67,33 +68,39 @@ class HitungGaji
         } else {
             $netto_gaji_setahun = ((($gaji_bruto - $thr) - $pengurangan) * 12) +  $thr;
         }
-
+        
         //ptkp setahun
         $ptkp =  PTKP::where('type', $data->ptkp)->first();
-
+        
         //pkp setahun
-        $pkp = abs($netto_gaji_setahun - $ptkp->nilai);
-
+        $pkp = $netto_gaji_setahun - $ptkp->nilai;
+        
         //pkp tanpa thr
         $pkp_tanpa_thr = $pkp - $thr;
-
+        
         //pph-21 tanpa thr
         $pph = PPH::all();
         foreach ($pph as $key => $value) {
-            if ($pkp > $value->nilai_min && $pkp <= $value->nilai_max) {
+            if ($pkp_tanpa_thr > $value->nilai_min && $pkp_tanpa_thr <= $value->nilai_max) {
                 $pph_tanpa_thr = round($pkp_tanpa_thr * $value->persentase / 100 - $value->pengurangan, 0);
+            }else{
+                $pph_tanpa_thr = 0;
             }
         }
+      
 
         //pph-21 dengan thr
         foreach ($pph as $key => $value) {
             if ($pkp > $value->nilai_min && $pkp <= $value->nilai_max) {
                 $pph_dengan_thr = round($pkp * $value->persentase / 100 - $value->pengurangan, 0);
+            }else{
+                $pph_dengan_thr = 0;
             }
         }
-
+        
         //pph-21 thr
         $pph_thr = $pph_dengan_thr - $pph_tanpa_thr;
+        // return $pph_thr;
 
         //pph-21
         if ($tgl_masuk_kerja != 01) {

@@ -90,10 +90,21 @@
             </div>
 
             <div class="block-header" style="margin-top: 20px">
-                <h2>
-                    SLIP GAJI {{ $gaji->nama }}
-                    {{-- <small>Taken from <a href="https://datatables.net/" target="_blank">datatables.net</a></small> --}}
-                </h2>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div style="margin-top: 20px;">
+                        <h2 >
+                            SLIP GAJI {{ $gaji->nama }}
+                            {{-- <small>Taken from <a href="https://datatables.net/" target="_blank">datatables.net</a></small> --}}
+                        </h2>
+                </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="pull-right">
+                        <a target="_blank" href="{{route('cetak', $gaji->nip_pegawai)}}" class="btn btn-success waves-effect"><i class="material-icons">print</i><span>Cetak</span></a>
+                    </div>
+                </div>
+            </div>
             </div>
             <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -101,7 +112,7 @@
                         <div class="body">
                             <div class="row">
                                 <div class="col-lg-1">
-                                    <img src="{{ asset('asset/images/logo.png') }}" width="100px" height="100px"
+                                    <img src="{{ asset('public/asset/images/logo.png') }}" width="100px" height="100px"
                                         alt="">
                                 </div>
                                 <div class="col-lg-11">
@@ -153,7 +164,7 @@
                                                         TUNJANGAN PERUSAHAAN</b></td>
                                                 <td style="width: 8%"></td>
                                                 <td style="width: 20px"><b>:</b></td>
-                                                <td> <b> @uang($gaji->gaji_pokok + $gaji->uang_makan + $gaji->uang_transport + $gaji->adjustment)</b> </td>
+                                                <td> <b> @if ($gaji->status_pegawai == 2) @uang($gaji->gaji_gross_kontrak + $gaji->premi_bpjs_kes + $gaji->premi_bpjs_ket + $gaji->premi_jp + $pph) @else @uang($gaji->gaji_pokok + $gaji->uang_makan + $gaji->uang_transport + $gaji->premi_bpjs_kes + $gaji->premi_bpjs_ket + $gaji->premi_jp + $pph) @endif</b> </td>
                                             </tr>
                                             <tr>
                                                 <td style="width: 150px;padding-bottom: 10px"><b>PERINCIAN</b></td>
@@ -247,7 +258,7 @@
                                                 </td>
                                                 <td style="width: 150px;"></td>
                                                 <td style="width: 10px;margin-top: 1%; padding-bottom: 20px;"><b>:</b></td>
-                                                <td style="margin-top: 1%; padding-bottom: 20px;"><b> @uang($gaji->gaji_pokok + $gaji->uang_makan + $gaji->uang_transport)</b></td>
+                                                <td style="margin-top: 1%; padding-bottom: 20px;"><b>@if ($gaji->status_pegawai == 2) @uang($gaji->gaji_gross_kontrak) @else @uang($gaji->gaji_pokok + $gaji->uang_makan + $gaji->uang_transport) @endif </b></td>
                                             </tr>
                                             <tr>
                                                 <td style="width: 150px; padding-top: 10px">

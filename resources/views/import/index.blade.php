@@ -144,13 +144,13 @@
                                             <div class="col-sm-3">
                                                 <div class="demo-switch-title">PENAMBAHAN</div>
                                                 <div class="switch">
-                                                    <label><input type="checkbox" ><span class="lever switch-col-grey"></span></label>
+                                                    <label><input type="checkbox" value="tambah" name="penambahan"><span class="lever switch-col-grey"></span></label>
                                                 </div>
                                             </div>
                                             <div class="col-sm-9">
                                                 <div class="demo-switch-title">PENGURANGAN</div>
                                                 <div class="switch">
-                                                    <label><input type="checkbox" ><span class="lever switch-col-grey"></span></label>
+                                                    <label><input type="checkbox" value="kurang" name="pengurangan" ><span class="lever switch-col-grey"></span></label>
                                                 </div>
                                             </div>
                                         </div>
