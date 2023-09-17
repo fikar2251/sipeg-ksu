@@ -11,12 +11,12 @@
             <div class="btn-group user-helper-dropdown">
                 <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">keyboard_arrow_down</i>
                 <ul class="dropdown-menu pull-right">
-                    <li><a href="javascript:void(0);"><i class="material-icons">person</i>Profil</a></li>
-                    <li><a href="javascript:void(0);"><i class="material-icons">lock_outline</i>Ganti Password</a></li>
+                    <!-- <li><a href="javascript:void(0);"><i class="material-icons">person</i>Profil</a></li>
+                    <li><a href="javascript:void(0);"><i class="material-icons">lock_outline</i>Ganti Password</a></li> -->
                     <li>
                         <form action="{{route('logout')}}" method="POST">
                             @csrf
-                            <button type="submit" href="javascript:void(0);"><i class="material-icons">input</i>Logout</button>
+                            <button class="btn btn-danger" style="margin-left: 10px;" type="submit" href="javascript:void(0);"><i class="material-icons">input</i>Logout</button>
                         </form>
                     </li>
                 </ul>
@@ -52,14 +52,33 @@
                     </li>
                 </ul>
             </li>
+
+            <li @class(['active' => request()->is('import') || request()->is('kehadiran') ]) >
+                <a href="javascript:void(0);" class="menu-toggle">
+                    <i class="material-icons">accessibility</i>
+                    <span>Absensi</span>
+                </a>
+                <ul  class="ml-menu">
+                    <li @class(['active' => request()->is('import') ])>
+                        <a href="{{route('import')}}" >
+                            <span>Import Data Absensi</span>
+                        </a>
+                    </li>
+                    <li @class(['active' => request()->is('kehadiran')])>
+                        <a href="{{route('kehadiran')}}" >
+                            <span>Data Kehadiran</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
            
             
-            <li @class(['active' => request()->is('import')]) >
+            <!-- <li @class(['active' => request()->is('import')]) >
                 <a href="{{route('import')}}">
                   <i class="material-icons">file_upload</i>
                   <span>Import Excel</span>
                 </a>
-              </li>
+              </li> -->
             <li @class(['active' => request()->is('gajiAll')]) >
                 <a href="{{route('gajiAll')}}">
                     <i class="material-icons">attach_money</i>

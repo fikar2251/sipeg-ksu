@@ -19,7 +19,14 @@ class HitungGaji
         $pegawai = Pegawai::where('nip_pegawai', $nip)->first();
         // dd($pegawai->nip_pegawai);
         // die;
-        $total_gaji = $gaji->uang_makan + $gaji->uang_transport + $pegawai->gaji_pokok + $adjustment + $supervisor;
+        if ($gaji->keterangan_adjustment == 'tambah') {
+            # code...
+            $total_gaji = $gaji->uang_makan + $gaji->uang_transport + $pegawai->gaji_pokok + $adjustment + $supervisor;
+        }elseif ($gaji->keterangan_adjustment == 'kurang') {
+            $total_gaji = $gaji->uang_makan + $gaji->uang_transport + $pegawai->gaji_pokok - $adjustment + $supervisor;
+        }else {
+            $total_gaji = $gaji->uang_makan + $gaji->uang_transport + $pegawai->gaji_pokok + $adjustment + $supervisor;
+        }
         //netto gaji
         $netto_gaji = $total_gaji - $gaji->pot_bpjs_ket - $gaji->pot_bpjs_kes - $gaji->pot_jp - $pinjaman;
 
@@ -32,8 +39,15 @@ class HitungGaji
         $pegawai = Pegawai::where('nip_pegawai', $nip)->first();
         // $total_gaji = $gaji->uang_makan + $gaji->uang_transport + $pegawai->gaji_pokok + $adjustment;
         //netto gaji
-
-        $total = $gaji->gaji_gross_kontrak + $adjustment;
+        if ($gaji->keterangan_adjustment == 'tambah') {
+            # code...
+            $total = $gaji->gaji_gross_kontrak + $adjustment;
+        }elseif ($gaji->keterangan_adjustment == 'kurang') {
+            # code...
+            $total = $gaji->gaji_gross_kontrak - $adjustment;
+        }else {
+            $total = $gaji->gaji_gross_kontrak + $adjustment;
+        }
         $total_gaji = $total - $gaji->pot_bpjs_kes - $gaji->pot_bpjs_ket - $gaji->pot_jp;
 
         return $total_gaji;
@@ -154,7 +168,9 @@ class HitungGaji
         } elseif ($pegawai->gaji_pokok > $status_karyawan->pot_jp_nilai) {
             $pot_jp = round($status_karyawan->pot_jp_nilai * $status_karyawan->pot_jp_max / 100);
         }
-        $check = Gaji::where('kode_absen', $kode_absen)->first();
+        $check = Gaji::where('kode_absen', $kode_absen)
+        ->where('bulan', $detail_absen->bulan)
+        ->first();
         if ($check === null) {
             Gaji::create([
                 'nik_pegawai' => $pegawai->nip_pegawai,

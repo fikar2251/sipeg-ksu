@@ -70,9 +70,10 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(ImportController::class)->group(function () {
         Route::get('import', 'index')->name('import');
+        Route::get('kehadiran', 'kehadiran')->name('kehadiran');
         Route::get('cetak/{cetak}', 'cetak')->name('cetak');
         Route::get('gajiAll', 'gajiAll')->name('gajiAll');
-        Route::get('gaji/{gaji}', 'detailGaji')->name('detailGaji');
+        Route::get('gaji/{gaji}/{bulan}', 'detailGaji')->name('detailGaji');
         Route::post('gaji', 'hitungSalary')->name('hitungSalary');
         Route::post('file-import', 'create')->name('file-import');
     });

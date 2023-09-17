@@ -21,6 +21,8 @@ class KaryawanTetapController extends Controller
         $pegawai = Pegawai::select('pegawai.*', 'jabatan.nama as nama_jabatan', 'departemen.nama as nama_departemen')
             ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
             ->join('departemen', 'departemen.id', '=', 'pegawai.departemen')
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'asc')
             ->where('status_pegawai', 1)->get();
 
         $count = count($pegawai);

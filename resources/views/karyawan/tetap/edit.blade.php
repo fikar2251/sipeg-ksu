@@ -14,7 +14,7 @@
                 <div class="card">
                     <div class="body">
                         <div class="row clearfix">
-                            <form action="{{route('updatekaryawanKontrak', $data->id)}}" method="POST" >
+                            <form action="{{route('updatekaryawanTetap', $data->id)}}" method="POST" >
                                 @csrf
                                 @method('PUT')
                             <div class="col-sm-12">

@@ -134,7 +134,31 @@
                                             <tr>
                                                 <td style="width: 150px">Periode</td>
                                                 <td style="width: 10px">:</td>
-                                                <td>Juni 2023</td>
+                                                <td>@if($gaji->bulan == 01)
+                                                    Januari {{$gaji->tahun}}
+                                                    @elseif($gaji->bulan == 02)
+                                                    Februari {{$gaji->tahun}}
+                                                    @elseif($gaji->bulan == 03)
+                                                    Maret {{$gaji->tahun}}
+                                                    @elseif($gaji->bulan == 04)
+                                                    April {{$gaji->tahun}}
+                                                    @elseif($gaji->bulan == 05)
+                                                    Mei {{$gaji->tahun}}
+                                                    @elseif($gaji->bulan == 06)
+                                                    Juni {{$gaji->tahun}}
+                                                    @elseif($gaji->bulan == 07)
+                                                    Juli {{$gaji->tahun}}
+                                                    @elseif($gaji->bulan == '08')
+                                                    Agustus {{$gaji->tahun}}
+                                                    @elseif($gaji->bulan == '09')
+                                                    September {{$gaji->tahun}}
+                                                    @elseif($gaji->bulan == 10)
+                                                    Oktober {{$gaji->tahun}}
+                                                    @elseif($gaji->bulan == 11)
+                                                    November {{$gaji->tahun}}
+                                                    @elseif($gaji->bulan == 12)
+                                                    Desember {{$gaji->tahun}}
+                                                    @endif</td>
                                             </tr>
                                             <tr>
                                                 <td style="width: 150px">No. Karyawan</td>

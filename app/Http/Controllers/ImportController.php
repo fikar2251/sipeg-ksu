@@ -44,11 +44,30 @@ class ImportController extends Controller
         ]);
     }
 
+    public function kehadiran()
+    {
+        $pegawai = Pegawai::select('pegawai.*', 'gaji.*', 'status_pekerjaan.nama as nama_status', 'jabatan.nama as nama_jabatan')
+        ->join('gaji', 'gaji.kode_absen', '=', 'pegawai.kode_absen')
+        ->join('status_pekerjaan', 'status_pekerjaan.id', '=', 'pegawai.status_pegawai')
+        ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
+        ->get();
+
+    // dd($count);
+    return view('import.kehadiran', [
+        'pegawai' => $pegawai
+    ]);
+    }
+
     public function hitungSalary()
     {
         $pinjaman = request()->input('pinjaman') ? request()->input('pinjaman') : 0;
         $adjustment = request()->input('adjustment') ? request()->input('adjustment') : 0;
         $supervisor = request()->input('supervisor') ? request()->input('supervisor') : 0;
+        $penambahan = request()->input('penambahan');
+        // var_dump($penambahan);
+        // die;
+        $pengurangan = request()->input('pengurangan');
+        $keterangan_adjustment = request()->input('keterangan_adjustment');
         $nip = request()->input('nip') ? request()->input('nip') : 0;
         $thr = request()->input('thr') ? request()->input('thr') : 0;
         try {
@@ -60,6 +79,7 @@ class ImportController extends Controller
                     'adjustment' => $adjustment,
                     'pinjaman' => $pinjaman,
                     'supervisor' => $supervisor,
+                    'keterangan_adjustment' => $keterangan_adjustment
                 ]);
             } elseif ($pegawai->status_pegawai == 2) {
                 # code...
@@ -98,8 +118,9 @@ class ImportController extends Controller
             ->where('pegawai.status_pegawai', 2)->get();
         // dd($data->gaji_pokok + $data->uang_makan + $data->uang_transport);
         // dd(count($dataTetap));
-        $count = count($dataTetap);
-        if ($count > 0) {
+        $countTetap = count($dataTetap);
+        $countKontrak = count($dataKontrak);
+        if ($countTetap > 0 && $countKontrak > 0) {
             foreach ($dataTetap as $key => $data) {
                 $netto_gaji_tetap = HitungGaji::hitungTetap($data->nip_pegawai, $data->pinjaman, $data->adjustment, $data->supervisor);
             }
@@ -151,12 +172,14 @@ class ImportController extends Controller
             'data_kontrak' => $dataKontrak
         ]);
     }
-    public function detailGaji($id)
+    public function detailGaji($id, $bulan)
     {
         $data = Gaji::select('gaji.*', 'pegawai.*', 'jabatan.nama as nama_jabatan')
             ->join('pegawai', 'pegawai.nip_pegawai', '=', 'gaji.nik_pegawai')
             ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
-            ->where('gaji.nik_pegawai', $id)->first();
+            ->where('gaji.nik_pegawai', $id)
+            ->where('gaji.bulan', $bulan)
+            ->first();
         // dd($data->gaji_pokok + $data->uang_makan + $data->uang_transport);
         // dd($data);
         if ($data->status_pegawai == 1) {
@@ -232,13 +255,14 @@ class ImportController extends Controller
     public function create(Request $request)
     {
 
-        $bulan = $request->bulan;
+        // $bulan = $request->bulan;
         // dd($bulan);
         $data = Excel::toArray([], $request->file('excel')->store('temp'), null, null, null, true)[0];
         $date = $data[0];
         $count_data = count($data);
         $times = array_slice($data, 1, $count_data);
         $jum = count($date);
+        // dd($times);
         foreach ($times as $value) {
             for ($i = 7; $i < $jum - 1; $i++) {
                 # code...
@@ -256,7 +280,7 @@ class ImportController extends Controller
         }
         // dd($value);
         try {
-            // dd($datas);
+           
             foreach ($datas as $key => $value) {
 
                 $bulan = Carbon::parse($value['tgl'])->format("m");
@@ -279,7 +303,7 @@ class ImportController extends Controller
                 // dd($bulan);
 
             }
-            return redirect()->back()->with('success', 'Import success!');
+            return redirect()->to('/kehadiran')->with('success', 'Import success!');
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', $th->getMessage());
         }

@@ -38,6 +38,7 @@
                                             <th rowspan="2">
                                               Gaji Pokok</th>
                                             <th style="width: 25%" rowspan="2">Jml. Hari Kerja</th>
+                                            <th style="width: 25%" rowspan="2">Bulan</th>
                                             <th style="text-align: center" colspan="3">Tunjangan</th>
                                             <th rowspan="2">Adjusment</th>
                                             <th rowspan="2">Total Gaji</th>
@@ -66,12 +67,37 @@
                                         <tr>
                                             {{-- <td >{{$loop->iteration}}</td> --}}
                                             <td>
-                                                <a target="_blank" href="{{ route('detailGaji', $gaji->nip_pegawai) }}">{{ $gaji->nama }}</a>                                                
+                                                <a target="_blank" href="{{ route('detailGaji', [$gaji->nip_pegawai, $gaji->bulan]) }}">{{ $gaji->nama }}</a>                                                
                                             </td>
                                             <td>{{ $gaji->nip_pegawai }}</td>
                                             <td> @rupiah( $gaji->gaji_pokok + $gaji->uang_makan + $gaji->uang_transport)</td>
                                             <td>@rupiah($gaji->gaji_pokok)</td>
                                             <td>{{ $gaji->jumlah_masuk }}</td>
+                                            <td>@if($gaji->bulan == 01)
+                                                    Januari
+                                                    @elseif($gaji->bulan == 02)
+                                                    Februari 
+                                                    @elseif($gaji->bulan == 03)
+                                                    Maret
+                                                    @elseif($gaji->bulan == 04)
+                                                    April
+                                                    @elseif($gaji->bulan == 05)
+                                                    Mei
+                                                    @elseif($gaji->bulan == 06)
+                                                    Juni
+                                                    @elseif($gaji->bulan == 07)
+                                                    Juli
+                                                    @elseif($gaji->bulan == '08')
+                                                    Agustus
+                                                    @elseif($gaji->bulan == '09')
+                                                    September
+                                                    @elseif($gaji->bulan == 10)
+                                                    Oktober
+                                                    @elseif($gaji->bulan == 11)
+                                                    November
+                                                    @elseif($gaji->bulan == 12)
+                                                    Desember
+                                                    @endif</td>
                                             <td>@rupiah($gaji->uang_makan)</td>
                                             <td>@rupiah($gaji->uang_transport)</td>
                                             <td>@rupiah($gaji->supervisor)</td>
@@ -118,6 +144,7 @@
                                             <th rowspan="2">
                                               Gaji per Hari</th>
                                             <th style="width: 25%" rowspan="2">Jml. Hari Kerja</th>
+                                            <th style="width: 25%" rowspan="2">Bulan</th>
                                             <th style="text-align: center" colspan="2">Tunjangan</th>
                                             <th rowspan="2">Adjusment</th>
                                             <th rowspan="2">Total Gaji</th>
@@ -144,11 +171,36 @@
                                         @foreach ($data_kontrak as $gaji)
                                         <tr>
                                             {{-- <td >{{$loop->iteration}}</td> --}}
-                                            <td> <a target="_blank" href="{{ route('detailGaji', $gaji->nip_pegawai) }}">{{ $gaji->nama }}</a> </td>
+                                            <td> <a target="_blank" href="{{ route('detailGaji', [$gaji->nip_pegawai, $gaji->bulan]) }}">{{ $gaji->nama }}</a> </td>
                                             <td>{{ $gaji->nip_pegawai }}</td>
                                             <td> @rupiah( $gaji->gaji_gross_kontrak)</td>
                                             <td>@rupiah($gaji->gaji_pokok)</td>
                                             <td>{{ $gaji->jumlah_masuk }}</td>
+                                            <td>@if($gaji->bulan == 01)
+                                                    Januari
+                                                    @elseif($gaji->bulan == 02)
+                                                    Februari 
+                                                    @elseif($gaji->bulan == 03)
+                                                    Maret
+                                                    @elseif($gaji->bulan == 04)
+                                                    April
+                                                    @elseif($gaji->bulan == 05)
+                                                    Mei
+                                                    @elseif($gaji->bulan == 06)
+                                                    Juni
+                                                    @elseif($gaji->bulan == 07)
+                                                    Juli
+                                                    @elseif($gaji->bulan == '08')
+                                                    Agustus
+                                                    @elseif($gaji->bulan == '09')
+                                                    September
+                                                    @elseif($gaji->bulan == 10)
+                                                    Oktober
+                                                    @elseif($gaji->bulan == 11)
+                                                    November
+                                                    @elseif($gaji->bulan == 12)
+                                                    Desember
+                                                    @endif</td>
                                             <td>@rupiah($gaji->uang_makan)</td>
                                             <td>@rupiah($gaji->uang_transport)</td>
                                             <td>@rupiah($gaji->adjustment)</td>
