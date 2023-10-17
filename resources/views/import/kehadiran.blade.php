@@ -117,7 +117,28 @@
                                                 <input type="text" class="form-control" name="pinjaman" id="pinjaman">
                                             </div>
                                         </div>
-                                        <label for="adjusment">Adjustment</label>
+                                        <select id="opsi-pinjaman" class="form-control show-tick pinjaman" style="margin-bottom: 100px;" name="keterangan_adjustment">
+                                            <option value="">-- Opsi Pinjaman --</option>
+                                            <option value="tenor">Tenor</option>
+                                            <option value="nominal">Nominal</option>
+                                        </select>
+                                        <div id="tenor-pinjaman" style="display: none">
+                                            <label style="margin-top: 20px;" for="adjusment">Tenor Pinjaman</label>
+                                            <div class="form-group">
+                                                <div class="form-line" >
+                                                    <input type="text" class="form-control" name="tenor" id="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="nominal-pinjaman" style="display: none">
+                                            <label style="margin-top: 20px;" for="adjusment">Nominal Pinjaman</label>
+                                            <div class="form-group">
+                                                <div class="form-line" >
+                                                    <input type="text" class="form-control" name="nominal" id="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <label  style="margin-top: 20px;" for="adjusment">Adjustment</label>
                                         <div class="form-group">
                                             <div class="form-line" >
                                                 <input type="text" class="form-control" name="adjustment" id="adjustment">
@@ -211,6 +232,23 @@
                 //  alert(book_id)
             });
 
+            
+        });
+        $(document).on('change', '.pinjaman', function() {
+           let pinjam = document.getElementById('opsi-pinjaman').value;
+           let tenor = document.getElementById('tenor-pinjaman');
+           let nominal = document.getElementById('nominal-pinjaman');
+           if (pinjam ==  'tenor') {
+            tenor.style.display = 'block';
+            nominal.style.display = 'none';
+           }else if(pinjam == 'nominal') {
+            tenor.style.display = 'none';
+            nominal.style.display = 'block';
+           }else{
+            tenor.style.display = 'none';
+            nominal.style.display = 'none';
+           }
+           console.log(pinjam);
         });
     </script>
 @endpush

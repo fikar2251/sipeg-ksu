@@ -10,6 +10,7 @@ use App\Models\DetailAbsen;
 use App\Models\Gaji;
 use App\Models\Import;
 use App\Models\Pegawai;
+use App\Models\Pinjaman;
 use App\Models\PPH;
 use App\Models\PTKP;
 use App\Models\StatusKaryawan;
@@ -47,15 +48,15 @@ class ImportController extends Controller
     public function kehadiran()
     {
         $pegawai = Pegawai::select('pegawai.*', 'gaji.*', 'status_pekerjaan.nama as nama_status', 'jabatan.nama as nama_jabatan')
-        ->join('gaji', 'gaji.kode_absen', '=', 'pegawai.kode_absen')
-        ->join('status_pekerjaan', 'status_pekerjaan.id', '=', 'pegawai.status_pegawai')
-        ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
-        ->get();
+            ->join('gaji', 'gaji.kode_absen', '=', 'pegawai.kode_absen')
+            ->join('status_pekerjaan', 'status_pekerjaan.id', '=', 'pegawai.status_pegawai')
+            ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
+            ->get();
 
-    // dd($count);
-    return view('import.kehadiran', [
-        'pegawai' => $pegawai
-    ]);
+        // dd($count);
+        return view('import.kehadiran', [
+            'pegawai' => $pegawai
+        ]);
     }
 
     public function hitungSalary()
@@ -63,13 +64,19 @@ class ImportController extends Controller
         $pinjaman = request()->input('pinjaman') ? request()->input('pinjaman') : 0;
         $adjustment = request()->input('adjustment') ? request()->input('adjustment') : 0;
         $supervisor = request()->input('supervisor') ? request()->input('supervisor') : 0;
-        $penambahan = request()->input('penambahan');
-        // var_dump($penambahan);
-        // die;
-        $pengurangan = request()->input('pengurangan');
         $keterangan_adjustment = request()->input('keterangan_adjustment');
         $nip = request()->input('nip') ? request()->input('nip') : 0;
         $thr = request()->input('thr') ? request()->input('thr') : 0;
+        $tenor =  request()->input('tenor');
+        $nominal_pinjaman = request()->input('nominal');
+        if ($tenor) {
+            $nominal_pinjaman = $pinjaman / $tenor;
+        } elseif ($nominal_pinjaman) {
+            $tenor = $pinjaman / $tenor;
+        } else {
+            $tenor = 0;
+            $nominal_pinjaman = 0;
+        }
         try {
             //code...
             $data = Gaji::where('nik_pegawai', $nip)->first();
@@ -79,28 +86,45 @@ class ImportController extends Controller
                     'adjustment' => $adjustment,
                     'pinjaman' => $pinjaman,
                     'supervisor' => $supervisor,
+                    'tenor' => $tenor,
+                    'nominal_pinjaman' => $nominal_pinjaman,
+                    'sisa_pinjaman' => $pinjaman,
                     'keterangan_adjustment' => $keterangan_adjustment
                 ]);
+                $data_pinjaman = Pinjaman::where('nip_pegawai', $nip)->first();
+                if ($pinjaman != 0) {
+                    Pinjaman::create([
+                        'nip_pegawai' => $nip,
+                        'pinjaman' => $pinjaman,
+                        'tenor' => $tenor,
+                        'nominal_pinjaman' => $nominal_pinjaman,
+                        'sisa_pinjaman' => $pinjaman
+                    ]);
+                }
             } elseif ($pegawai->status_pegawai == 2) {
                 # code...
                 if ($data->nik_pegawai == '22052013-21') {
                     $update = Gaji::where('nik_pegawai', $nip)->update([
                         'adjustment' => $data->premi_bpjs_kes - 50000,
-                        // 'pinjaman' => $pinjaman,
+                        'pinjaman' => $pinjaman,
+                        'tenor' => $tenor,
+                        'nominal_pinjaman' => $nominal_pinjaman,
                         'thr' => $thr,
                     ]);
                 } else {
                     $update = Gaji::where('nik_pegawai', $nip)->update([
                         'adjustment' => $adjustment,
-                        // 'pinjaman' => $pinjaman,
+                        'pinjaman' => $pinjaman,
+                        'tenor' => $tenor,
+                        'nominal_pinjaman' => $nominal_pinjaman,
                         'thr' => $thr,
                     ]);
                 }
             }
-            return redirect()->route('detailGaji', $nip)->with('success', 'update berhasil');
+            return redirect()->route('detailGaji', [$nip, $data->bulan])->with('success', 'update berhasil');
         } catch (\Throwable $th) {
             //throw $th;
-            return redirect()->route('detailGaji', $nip)->with('error', $th->getMessage());
+            return redirect()->route('detailGaji', [$nip, $data->bulan])->with('error', $th->getMessage());
         }
         // dd($nip);
         // $netto_gaji = HitungGaji::hitung($nip, $pinjaman, $adjustment);
@@ -111,18 +135,19 @@ class ImportController extends Controller
         $dataTetap = Gaji::select('gaji.*', 'pegawai.*', 'jabatan.nama as nama_jabatan')
             ->join('pegawai', 'pegawai.nip_pegawai', '=', 'gaji.nik_pegawai')
             ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
+            // ->leftJoin('pinjaman', 'pinjaman.nip_pegawai', '=', 'gaji.nik_pegawai')
             ->where('pegawai.status_pegawai', 1)->get();
         $dataKontrak = Gaji::select('gaji.*', 'pegawai.*', 'jabatan.nama as nama_jabatan')
             ->join('pegawai', 'pegawai.nip_pegawai', '=', 'gaji.nik_pegawai')
             ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
             ->where('pegawai.status_pegawai', 2)->get();
         // dd($data->gaji_pokok + $data->uang_makan + $data->uang_transport);
-        // dd(count($dataTetap));
+        // dd($dataTetap);
         $countTetap = count($dataTetap);
         $countKontrak = count($dataKontrak);
         if ($countTetap > 0 && $countKontrak > 0) {
             foreach ($dataTetap as $key => $data) {
-                $netto_gaji_tetap = HitungGaji::hitungTetap($data->nip_pegawai, $data->pinjaman, $data->adjustment, $data->supervisor);
+                $netto_gaji_tetap = HitungGaji::hitungTetap($data->nip_pegawai, $data->pinjaman, $data->adjustment, $data->supervisor, $data->bulan);
             }
             foreach ($dataKontrak as $key => $datas) {
                 $total_gaji = HitungGaji::hitungKontrak($datas->nip_pegawai, $datas->adjustment);
@@ -131,7 +156,7 @@ class ImportController extends Controller
                 $total = $datas->gaji_gross_kontrak + $datas->adjustment;
                 $total_gaji = $total - $datas->pot_bjs_kes - $datas->pot_bpjs_ket - $datas->pot_jp;
             }
-        }else{
+        } else {
             $netto_gaji_tetap = 0;
             $total_gaji = 0;
             $pph = 0;
@@ -177,6 +202,7 @@ class ImportController extends Controller
         $data = Gaji::select('gaji.*', 'pegawai.*', 'jabatan.nama as nama_jabatan')
             ->join('pegawai', 'pegawai.nip_pegawai', '=', 'gaji.nik_pegawai')
             ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
+            // ->leftJoin('pinjaman', 'pinjaman.nip_pegawai', '=', 'gaji.nik_pegawai')
             ->where('gaji.nik_pegawai', $id)
             ->where('gaji.bulan', $bulan)
             ->first();
@@ -184,7 +210,7 @@ class ImportController extends Controller
         // dd($data);
         if ($data->status_pegawai == 1) {
             # code...
-            $netto_gaji = HitungGaji::hitungTetap($id, $data->pinjaman, $data->adjustment, $data->supervisor);
+            $netto_gaji = HitungGaji::hitungTetap($id, $data->pinjaman, $data->adjustment, $data->supervisor, $bulan);
             $total_gaji = $data->uang_makan + $data->uang_transport + $data->gaji_pokok + $data->adjustment + $data->supervisor;
             $pph = 0;
         } else {
@@ -217,7 +243,7 @@ class ImportController extends Controller
         // dd($data->status_pegawai);
         if ($data->status_pegawai == 1) {
             # code...
-            $netto_gaji = HitungGaji::hitungTetap($id, $data->pinjaman, $data->adjustment, $data->supervisor);
+            $netto_gaji = HitungGaji::hitungTetap($id, $data->pinjaman, $data->adjustment, $data->supervisor, $data->bulan);
             $total_gaji = $data->uang_makan + $data->uang_transport + $data->gaji_pokok + $data->adjustment + $data->supervisor;
             $pph = 0;
         } else {
@@ -278,9 +304,9 @@ class ImportController extends Controller
             }
             $year = Carbon::parse($date[$i])->format("Y");
         }
-        // dd($value);
+        // dd($datas);
         try {
-           
+
             foreach ($datas as $key => $value) {
 
                 $bulan = Carbon::parse($value['tgl'])->format("m");
@@ -300,8 +326,6 @@ class ImportController extends Controller
                         $this->hitungGaji($value['jumlah_kehadiran'], $value['nik'], $year, $bulan);
                     }
                 }
-                // dd($bulan);
-
             }
             return redirect()->to('/kehadiran')->with('success', 'Import success!');
         } catch (\Throwable $th) {
@@ -315,7 +339,13 @@ class ImportController extends Controller
         if ($pegawai != null) {
             # code...
             if ($pegawai->status_pegawai == 1) {
-                HitungGaji::masterTetap($pegawai, $kode_absen, $kehadiran, $year);
+                try {
+                    HitungGaji::masterTetap($pegawai, $kode_absen, $kehadiran, $year, $bulan);
+
+                    //code...
+                } catch (\Throwable $th) {
+                    return $th->getMessage();
+                }
             } elseif ($pegawai->status_pegawai == 2) {
                 HitungGaji::masterKontrak($pegawai, $kode_absen, $kehadiran, $year, $bulan);
                 // $detail_absen = DetailAbsen::where('kode_absen', $kode_absen)->first();

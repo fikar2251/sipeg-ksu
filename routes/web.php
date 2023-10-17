@@ -5,6 +5,7 @@ use App\Http\Controllers\GajiController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\KaryawanKontrakController;
 use App\Http\Controllers\KaryawanTetapController;
+use App\Http\Controllers\LemburController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
@@ -80,6 +81,13 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(UserController::class)->group(function () {
         Route::get('users', 'index')->name('users');
+    });
+
+    Route::controller(LemburController::class)->group(function () {
+        Route::get('lembur', 'index')->name('lembur');
+        Route::get('importlembur', 'import')->name('importlembur');
+        Route::post('import-lembur', 'store')->name('import-lembur');
+        Route::get('lemburAll', 'lemburAll')->name('lemburAll');
     });
 });
 

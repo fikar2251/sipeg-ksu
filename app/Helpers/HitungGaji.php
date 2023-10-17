@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Models\DetailAbsen;
 use App\Models\Gaji;
 use App\Models\Pegawai;
+use App\Models\Pinjaman;
 use App\Models\PPH;
 use App\Models\PTKP;
 use App\Models\StatusKaryawan;
@@ -13,22 +14,28 @@ use Carbon\Carbon;
 
 class HitungGaji
 {
-    public static function hitungTetap($nip, $pinjaman, $adjustment, $supervisor)
+    public static function hitungTetap($nip, $pinjaman, $adjustment, $supervisor, $bulan)
     {
-        $gaji = Gaji::where('nik_pegawai', $nip)->first();
+        $gaji = Gaji::where('nik_pegawai', $nip)->where('bulan', $bulan)->first();
         $pegawai = Pegawai::where('nip_pegawai', $nip)->first();
+        $data_pinjam = Pinjaman::where('nip_pegawai', $nip)->latest()->first();
+        if ($data_pinjam) {
+            $sisa_pinjam = $data_pinjam->nominal_pinjaman;
+        } else {
+            $sisa_pinjam = 0;
+        }
         // dd($pegawai->nip_pegawai);
         // die;
         if ($gaji->keterangan_adjustment == 'tambah') {
             # code...
             $total_gaji = $gaji->uang_makan + $gaji->uang_transport + $pegawai->gaji_pokok + $adjustment + $supervisor;
-        }elseif ($gaji->keterangan_adjustment == 'kurang') {
+        } elseif ($gaji->keterangan_adjustment == 'kurang') {
             $total_gaji = $gaji->uang_makan + $gaji->uang_transport + $pegawai->gaji_pokok - $adjustment + $supervisor;
-        }else {
+        } else {
             $total_gaji = $gaji->uang_makan + $gaji->uang_transport + $pegawai->gaji_pokok + $adjustment + $supervisor;
         }
         //netto gaji
-        $netto_gaji = $total_gaji - $gaji->pot_bpjs_ket - $gaji->pot_bpjs_kes - $gaji->pot_jp - $pinjaman;
+        $netto_gaji = $total_gaji - $gaji->pot_bpjs_ket - $gaji->pot_bpjs_kes - $gaji->pot_jp - $gaji->nominal_pinjaman;
 
         return $netto_gaji;
     }
@@ -42,10 +49,10 @@ class HitungGaji
         if ($gaji->keterangan_adjustment == 'tambah') {
             # code...
             $total = $gaji->gaji_gross_kontrak + $adjustment;
-        }elseif ($gaji->keterangan_adjustment == 'kurang') {
+        } elseif ($gaji->keterangan_adjustment == 'kurang') {
             # code...
             $total = $gaji->gaji_gross_kontrak - $adjustment;
-        }else {
+        } else {
             $total = $gaji->gaji_gross_kontrak + $adjustment;
         }
         $total_gaji = $total - $gaji->pot_bpjs_kes - $gaji->pot_bpjs_ket - $gaji->pot_jp;
@@ -73,7 +80,7 @@ class HitungGaji
         $peng_bpjs_ket = $data->pot_bpjs_ket + $data->pot_jp;
         $peng_bpjs_kes = $data->pot_bpjs_kes;
         $pengurangan = $biaya_jabatan + $peng_bpjs_kes + $peng_bpjs_ket;
-        
+
 
         //netto gaji disetahunkan
         if ($tgl_masuk_kerja == 02) {
@@ -82,36 +89,36 @@ class HitungGaji
         } else {
             $netto_gaji_setahun = ((($gaji_bruto - $thr) - $pengurangan) * 12) +  $thr;
         }
-        
+
         //ptkp setahun
         $ptkp =  PTKP::where('type', $data->ptkp)->first();
-        
+
         //pkp setahun
         $pkp = $netto_gaji_setahun - $ptkp->nilai;
-        
+
         //pkp tanpa thr
         $pkp_tanpa_thr = $pkp - $thr;
-        
+
         //pph-21 tanpa thr
         $pph = PPH::all();
         foreach ($pph as $key => $value) {
             if ($pkp_tanpa_thr > $value->nilai_min && $pkp_tanpa_thr <= $value->nilai_max) {
                 $pph_tanpa_thr = round($pkp_tanpa_thr * $value->persentase / 100 - $value->pengurangan, 0);
-            }else{
+            } else {
                 $pph_tanpa_thr = 0;
             }
         }
-      
+
 
         //pph-21 dengan thr
         foreach ($pph as $key => $value) {
             if ($pkp > $value->nilai_min && $pkp <= $value->nilai_max) {
                 $pph_dengan_thr = round($pkp * $value->persentase / 100 - $value->pengurangan, 0);
-            }else{
+            } else {
                 $pph_dengan_thr = 0;
             }
         }
-        
+
         //pph-21 thr
         $pph_thr = $pph_dengan_thr - $pph_tanpa_thr;
         // return $pph_thr;
@@ -129,10 +136,10 @@ class HitungGaji
         return $pph21;
     }
 
-    public static function masterTetap($pegawai, $kode_absen, $kehadiran, $year)
+    public static function masterTetap($pegawai, $kode_absen, $kehadiran, $year, $bulan)
     {
         $status_karyawan = StatusKaryawan::where('id', $pegawai->status_pegawai)->first();
-        $detail_absen = DetailAbsen::where('kode_absen', $kode_absen)->first();
+        $detail_absen = DetailAbsen::where('kode_absen', $kode_absen)->where('bulan', $bulan)->first();
         $uang_makan = $kehadiran * $status_karyawan->uang_makan;
         $uang_transport = $kehadiran * $status_karyawan->uang_transport;
         //premi
@@ -169,8 +176,27 @@ class HitungGaji
             $pot_jp = round($status_karyawan->pot_jp_nilai * $status_karyawan->pot_jp_max / 100);
         }
         $check = Gaji::where('kode_absen', $kode_absen)
-        ->where('bulan', $detail_absen->bulan)
-        ->first();
+            ->where('bulan', $detail_absen->bulan)
+            ->first();
+        $minusbulan = $detail_absen->bulan - 1;
+        $data2 = Gaji::where('kode_absen', $kode_absen)
+            ->where('bulan', $minusbulan)
+            ->first();
+        // dd($data2);
+        if ($data2 != null) {
+            if ($data2->pinjaman != 0) {
+                $nominal = $data2->pinjaman / $data2->tenor;
+                $sisa_pinjaman = $data2->sisa_pinjaman - $nominal;
+                Gaji::where('kode_absen', $kode_absen)->where('bulan', $detail_absen->bulan)->update([
+                    // 'nip_pegawai' => $data2->nik_pegawai,
+                    // 'pinjaman' => $data2->pinjaman,
+                    // 'tenor' => $data2->tenor,
+                    'nominal_pinjaman' => $nominal,
+                    'sisa_pinjaman' => $sisa_pinjaman,
+                ]);
+            }
+        }
+
         if ($check === null) {
             Gaji::create([
                 'nik_pegawai' => $pegawai->nip_pegawai,
@@ -236,7 +262,22 @@ class HitungGaji
             $pot_jp = round($status_karyawan->pot_jp_nilai * $status_karyawan->pot_jp_max / 100);
         }
 
-        $check = Gaji::where('kode_absen', $kode_absen)->first();
+        $check = Gaji::where('kode_absen', $kode_absen)
+            ->where('bulan', $bulan)
+            ->first();
+        $data2 = Gaji::where('kode_absen', $kode_absen)
+            ->where('bulan', $bulan - 1)
+            ->first();
+        if ($data2->pinjaman != 0) {
+            $sisa_pinjaman = $data2->pinjaman - $data2->nominal_pinjaman;
+            Pinjaman::create([
+                'nip_pegawai' => $data2->nik_pegawai,
+                'pinjaman' => $data2->pinjaman,
+                'tenor' => $data2->tenor,
+                'nominal_pinjaman' => $data2->nominal_pinjaman,
+                'sisa_pinjaman' => $sisa_pinjaman,
+            ]);
+        }
         if ($check === null) {
             // dd($check);
             Gaji::create([

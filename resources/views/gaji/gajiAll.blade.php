@@ -109,12 +109,12 @@
                                             <td>@rupiah($gaji->pot_bpjs_ket)</td>
                                             <td>@rupiah($gaji->pot_bpjs_kes)</td>
                                             <td>@rupiah($gaji->pot_jp)</td>
-                                            <td>@rupiah($gaji->pinjaman)</td>
+                                            <td>@rupiah($gaji->nominal_pinjaman)</td>
                                             <td>@php
-                                                $netto_gaji_tetap = HitungGaji::hitungTetap($gaji->nip_pegawai, $gaji->pinjaman, $gaji->adjustment, $gaji->supervisor);
+                                                $netto_gaji_tetap = HitungGaji::hitungTetap($gaji->nip_pegawai, $gaji->pinjaman, $gaji->adjustment, $gaji->supervisor, $gaji->bulan);
                                                 echo "Rp. " . number_format($netto_gaji_tetap, 0, ',', '.');
                                             @endphp</td>
-                                            <td></td>
+                                            <td>@rupiah($gaji->sisa_pinjaman)</td>
                                         </tr>
                                         @endforeach
                                     </tbody>

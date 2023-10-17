@@ -36,7 +36,8 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/HitungGaji.php"
+            "app/Helpers/HitungGaji.php",
+            "app/Helpers/HitungLembur.php"
         ]
     },
     "autoload-dev": {
