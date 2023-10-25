@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Helpers\HitungLembur;
 use App\Models\Lembur;
+use PhpOffice\PhpSpreadsheet\Calculation\TextData\Format;
+use Symfony\Component\HttpKernel\Controller\ArgumentResolver\RequestPayloadValueResolver;
 
 class LemburController extends Controller
 {
@@ -385,16 +387,77 @@ class LemburController extends Controller
     public function lemburAll()
     {
         $lemburAbsen = LemburAbsen::all();
-        foreach ($lemburAbsen as $key => $value) {
-            $pegawai = Pegawai::where('kode_absen', $value->kode_absen)->first();
-            if ($pegawai->status_pegawai ==  1) {
-                $dataLembur[] = HitungLembur::hitungLemburTetap($value->kode_absen);
-            } else {
-                $dataLembur[] = HitungLembur::hitungLemburKontrak($value->kode_absen);
+        if (!$lemburAbsen->isEmpty()) {
+            # code...
+            foreach ($lemburAbsen as $key => $value) {
+                $pegawai = Pegawai::where('kode_absen', $value->kode_absen)->first();
+                if ($pegawai->status_pegawai ==  1) {
+                    $dataLembur[] = HitungLembur::hitungLemburTetap($value->kode_absen);
+                } else {
+                    $dataLembur[] = HitungLembur::hitungLemburKontrak($value->kode_absen);
+                }
+                
             }
+            // dd($lemburAbsen);
+        }else{
+
+            $dataLembur[] = [];
         }
-        dd($dataLembur);
+       
+
+        
+        // dd($dataLembur);
         return view('lembur.index', compact('dataLembur'));
+    }
+
+    public function filterLembur(Request $request)
+    {
+        $awal = $request->periodeawal;
+        $akhir = $request->periodeakhir;
+        
+        $periodeAwal = Carbon::parse($awal)->format('d');
+        $periodeAkhir = Carbon::parse($akhir)->format('d');
+        // dd($periodeAwal);
+
+        $lemburAbsen = LemburAbsen::whereBetween('tanggal', [$periodeAwal, $periodeAkhir])->get();
+        if ($lemburAbsen) {
+             // $collect =  collect($dataLembur);
+             $lembur = $lemburAbsen->unique(function ($item) {
+                return $item->kode_absen;
+            });
+            // dd($uniqueArray);
+        // dd($lembur);
+        if (!$lembur->isEmpty()) {
+            # code...
+            foreach ($lembur as $key => $value) {
+                $pegawai = Pegawai::where('kode_absen', $value->kode_absen)->first();
+                if ($pegawai->status_pegawai ==  1) {
+                    $dataLembur[] = HitungLembur::hitungLemburTetap($value->kode_absen, $periodeAwal, $periodeAkhir);
+                } else {
+                    $dataLembur[] = HitungLembur::hitungLemburKontrak($value->kode_absen, $periodeAwal, $periodeAkhir);
+                }
+                // break;
+            }
+            
+            // dd($data);
+            // $dataLembur = array_unique($data);
+        }else{
+
+            $dataLembur[] = [];
+        }
+       
+
+        
+        // dd($dataLembur);
+       
+        return view('lembur.index', compact('dataLembur'));
+        }else {
+            $dataLembur[] = [];
+            return view('lembur.index', compact('dataLembur'))->with('error', 'Data Tidak ada');
+        }
+       
+
+        // dd($periodeAwal);
     }
 
     /**

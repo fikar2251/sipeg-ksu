@@ -26,6 +26,41 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
                         <div class="body">
+                            <form action=" {{route('lemburFilter')}} " method="POST">
+                                @csrf
+                            <div class="row">
+                             <div class="col-sm-3">
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <input type="text" id="periodeawal" name="periodeawal" class="form-control datepickermaster2" value="<?php if(isset($_POST["cari"])){ echo $_POST["periodeawal"]; } ?>" required/>
+                                    <label class="form-label">Periode Awal</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 form-control-label" style="width:50px;">
+                            <label>S/D</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <input type="text" id="periodeakhir" name="periodeakhir" class="form-control datepickermaster2" value="<?php if(isset($_POST["cari"])){ echo $_POST["periodeakhir"]; } ?>" required/>
+                                    <label class="form-label">Periode Akhir</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <button name="cari" type="submit" class="btn bg-green waves-effect">
+                                <i class="material-icons">search</i>
+                                <span>CARI</span>
+                            </button>
+                            <!-- <a href="{{route('lemburAll')}}"  class="btn bg-green waves-effect">
+                                <i class="material-icons">refresh</i>
+                                <span>RESET</span></a> -->
+                        </div>
+                            </div>
+                            </form>
+                           
+                            @if(request()->is('lemburFilter'))
                             <div class="table-responsive">
                                 <table style="font-size: 12px"
                                     class="table table-bordered table-striped table-hover">
@@ -60,6 +95,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @if(count($dataLembur) > 0)
                                         @php
                                             $no = 1;
                                         @endphp
@@ -89,10 +125,14 @@
                                         @endphp
                                         @endforeach
                                         @endforeach
+                                        @else
+
+                                        @endif
+                                       
                                     </tbody>
                                 </table>
                             </div>
-
+                            @endif
                             
                         </div>
                     </div>
@@ -102,3 +142,15 @@
     </section>
     {{-- <link href="../../plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet"> --}}
 @endsection
+@push('custom-scripts')
+<script>
+        $('.datepickermaster2').datetimepicker({
+            dayOfWeekStart: 1,
+            lang: 'en',
+            timepicker: false,
+            disabledDates: ['1986/01/08', '1986/01/09', '1986/01/10'],
+            
+            format: 'd-m-Y'
+        });
+    </script>
+@endpush

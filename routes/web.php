@@ -88,6 +88,7 @@ Route::middleware('auth')->group(function () {
         Route::get('importlembur', 'import')->name('importlembur');
         Route::post('import-lembur', 'store')->name('import-lembur');
         Route::get('lemburAll', 'lemburAll')->name('lemburAll');
+        Route::post('lemburFilter', 'filterLembur')->name('lemburFilter');
     });
 });
 

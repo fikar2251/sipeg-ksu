@@ -20,6 +20,7 @@
                                         {{-- <label style="font-size: 12px; color:red;"><span style="color:red">*</span>Hanya bisa menggunakan file excel(.xls)</label> --}}
 
                                     </div>
+                                  
                                     {{-- <div class="col-sm-3">
                                         <select required name="filter" class="tahun form-control">
                                             <option value="">Pilih Bulan</option>
@@ -41,6 +42,11 @@
                                         <button type="submit" name="upload" value="Submit"
                                             class="btn btn-lg btn-success">Submit</button>
                                     </div>
+                                    <div class="col-sm-4">
+                          <button class="btn btn-warning">
+                          <a href="{{asset('public/Template_Data_Lembur.xlsx')}}" download>Download Template</a>
+                          </button>
+                          </div>
                                 </div>
                             </form>
 

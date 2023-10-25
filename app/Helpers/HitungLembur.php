@@ -11,10 +11,20 @@ use Carbon\Carbon;
 
 class HitungLembur
 {
-    public static function hitungLemburTetap($kode_absen)
+    public static function hitungLemburTetap($kode_absen, $periodeawal = 0, $periodeakhir = 0)
     {
         $pegawai =  Pegawai::where('kode_absen', $kode_absen)->first();
-        $data = LemburAbsen::where('kode_absen', $pegawai->kode_absen)->get();
+        $kodeAbsen = $pegawai->kode_absen;
+        // $data = LemburAbsen::where('kode_absen', $pegawai->kode_absen)
+        // // ->whereBetween('tanggal', [$periodeawal, $periodeakhir])
+        // ->get();
+        $data = LemburAbsen::when($periodeawal, function($query) use ($kodeAbsen, $periodeawal, $periodeakhir) {
+            return $query
+            ->where('kode_absen', $kodeAbsen)
+            ->whereBetween('tanggal', [$periodeawal, $periodeakhir]);
+        }, function ($query) use ($kodeAbsen) {
+            return $query->where('kode_absen', $kodeAbsen);
+        })->get();
         $status =  StatusKaryawan::where('id', $pegawai->status_pegawai)->first();
         // $data = Carbon::between('2023-09-30', '2023-10-02')
 
@@ -175,10 +185,18 @@ class HitungLembur
         return $dataFinal;
     }
 
-    public static function hitungLemburKontrak($kode_absen)
+    public static function hitungLemburKontrak($kode_absen, $periodeawal = 0, $periodeakhir = 0)
     {
         $pegawai =  Pegawai::where('kode_absen', $kode_absen)->first();
-        $data = LemburAbsen::where('kode_absen', $pegawai->kode_absen)->get();
+        // $data = LemburAbsen::where('kode_absen', $pegawai->kode_absen)->get();
+        $kodeAbsen = $pegawai->kode_absen;
+        $data = LemburAbsen::when($periodeawal, function($query) use ($kodeAbsen, $periodeawal, $periodeakhir) {
+            return $query
+            ->where('kode_absen', $kodeAbsen)
+            ->whereBetween('tanggal', [$periodeawal, $periodeakhir]);
+        }, function ($query) use ($kodeAbsen) {
+            return $query->where('kode_absen', $kodeAbsen);
+        })->get();
         $status =  StatusKaryawan::where('id', $pegawai->status_pegawai)->first();
 
         if ($pegawai->nip_pegawai == '15102010-19') {

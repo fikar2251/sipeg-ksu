@@ -41,6 +41,11 @@
                                         <button type="submit" name="upload" value="Submit"
                                             class="btn btn-lg btn-success">Submit</button>
                                     </div>
+                                    <div class="col-sm-4">
+                          <button class="btn btn-warning">
+                          <a href="{{asset('public/Template_Data_Absen.xlsx')}}" download>Download Template</a>
+                          </button>
+                          </div>
                                 </div>
                             </form>
 
