@@ -197,25 +197,28 @@ class ImportController extends Controller
             'data_kontrak' => $dataKontrak
         ]);
     }
-    public function detailGaji($id, $bulan)
+    public function detailGaji($id)
     {
+        // dd($id);
+        $explode = explode('_', $id);
+        // dd($explode[1]);
         $data = Gaji::select('gaji.*', 'pegawai.*', 'jabatan.nama as nama_jabatan')
             ->join('pegawai', 'pegawai.nip_pegawai', '=', 'gaji.nik_pegawai')
             ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
             // ->leftJoin('pinjaman', 'pinjaman.nip_pegawai', '=', 'gaji.nik_pegawai')
-            ->where('gaji.nik_pegawai', $id)
-            ->where('gaji.bulan', $bulan)
+            ->where('gaji.nik_pegawai', $explode[0])
+            ->where('gaji.bulan', $explode[1])
             ->first();
         // dd($data->gaji_pokok + $data->uang_makan + $data->uang_transport);
         // dd($data);
         if ($data->status_pegawai == 1) {
             # code...
-            $netto_gaji = HitungGaji::hitungTetap($id, $data->pinjaman, $data->adjustment, $data->supervisor, $bulan);
+            $netto_gaji = HitungGaji::hitungTetap($explode[0], $data->pinjaman, $data->adjustment, $data->supervisor, $explode[1]);
             $total_gaji = $data->uang_makan + $data->uang_transport + $data->gaji_pokok + $data->adjustment + $data->supervisor;
             $pph = 0;
         } else {
-            $total = HitungGaji::hitungKontrak($id, $data->adjustment);
-            $pph = HitungGaji::hitungPPH($id, $data->thr);
+            $total = HitungGaji::hitungKontrak($explode[0], $data->adjustment);
+            $pph = HitungGaji::hitungPPH($explode[0], $data->thr);
             // dd($pph);
             $netto_gaji = abs($total - $pph);
             $total_gaji = $data->gaji_gross_kontrak + $data->adjustment;
@@ -234,21 +237,23 @@ class ImportController extends Controller
 
     public function cetak($id)
     {
-
+        $explode = explode('_', $id);
         $data = Gaji::select('gaji.*', 'pegawai.*', 'jabatan.nama as nama_jabatan')
             ->join('pegawai', 'pegawai.nip_pegawai', '=', 'gaji.nik_pegawai')
             ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
-            ->where('gaji.nik_pegawai', $id)->first();
+            ->where('gaji.nik_pegawai', $explode[0])
+            ->where('gaji.bulan', $explode[1])
+            ->first();
         // dd($data->gaji_pokok + $data->uang_makan + $data->uang_transport);
         // dd($data->status_pegawai);
         if ($data->status_pegawai == 1) {
             # code...
-            $netto_gaji = HitungGaji::hitungTetap($id, $data->pinjaman, $data->adjustment, $data->supervisor, $data->bulan);
+            $netto_gaji = HitungGaji::hitungTetap($explode[0], $data->pinjaman, $data->adjustment, $data->supervisor, $explode[1]);
             $total_gaji = $data->uang_makan + $data->uang_transport + $data->gaji_pokok + $data->adjustment + $data->supervisor;
             $pph = 0;
         } else {
-            $total_gaji = HitungGaji::hitungKontrak($id, $data->adjustment);
-            $pph = HitungGaji::hitungPPH($id, $data->thr);
+            $total_gaji = HitungGaji::hitungKontrak($explode[0], $data->adjustment);
+            $pph = HitungGaji::hitungPPH($explode[0], $data->thr);
             $netto_gaji = abs($total_gaji - $pph);
             $total = $data->gaji_gross_kontrak + $data->adjustment;
             $total_gaji = $total - $data->pot_bjs_kes - $data->pot_bpjs_ket - $data->pot_jp;

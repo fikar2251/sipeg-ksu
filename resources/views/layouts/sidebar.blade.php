@@ -3,7 +3,7 @@
     <!-- User Info -->
     <div class="user-info">
         <div class="image">
-            <img src="public/asset/images/fotoprofil/default.jpg" width="50" height="55" alt="User" />
+            <img src="{{asset('public/asset/images/fotoprofil/default.jpg')}}" width="50" height="55" alt="User" />
         </div>
         <div class="info-container">
             <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{Auth::user()->name}}</div>
@@ -55,7 +55,7 @@
 
             <li @class(['active' => request()->is('import') || request()->is('kehadiran') ]) >
                 <a href="javascript:void(0);" class="menu-toggle">
-                    <i class="material-icons">accessibility</i>
+                    <i class="material-icons">view_list</i>
                     <span>Absensi</span>
                 </a>
                 <ul  class="ml-menu">
@@ -90,10 +90,16 @@
                     <span>Penggajian</span>
                 </a>
             </li>
-              <li @class(['active' => request()->is('lemburAll')]) >
+              <li @class(['active' => request()->is('lemburAll') || request()->is('lemburFilter')]) >
                 <a href="{{route('lemburAll')}}">
-                    <i class="material-icons">attach_money</i>
+                    <i class="material-icons">monetization_on</i>
                     <span>Lembur</span>
+                </a>
+            </li>
+              <li @class(['active' => request()->is('send')]) >
+                <a href="{{route('send')}}">
+                    <i class="material-icons">poll</i>
+                    <span>Slip Gaji</span>
                 </a>
             </li>
             {{-- <li @class(['active' => request()->is('roles') || request()->is('permissions') || request()->is('users')]) >

@@ -396,16 +396,15 @@ class LemburController extends Controller
                 } else {
                     $dataLembur[] = HitungLembur::hitungLemburKontrak($value->kode_absen);
                 }
-                
             }
             // dd($lemburAbsen);
-        }else{
+        } else {
 
             $dataLembur[] = [];
         }
-       
 
-        
+
+
         // dd($dataLembur);
         return view('lembur.index', compact('dataLembur'));
     }
@@ -414,48 +413,60 @@ class LemburController extends Controller
     {
         $awal = $request->periodeawal;
         $akhir = $request->periodeakhir;
-        
+
         $periodeAwal = Carbon::parse($awal)->format('d');
         $periodeAkhir = Carbon::parse($akhir)->format('d');
         // dd($periodeAwal);
 
         $lemburAbsen = LemburAbsen::whereBetween('tanggal', [$periodeAwal, $periodeAkhir])->get();
         if ($lemburAbsen) {
-             // $collect =  collect($dataLembur);
-             $lembur = $lemburAbsen->unique(function ($item) {
+            // $collect =  collect($dataLembur);
+            $lembur = $lemburAbsen->unique(function ($item) {
                 return $item->kode_absen;
             });
             // dd($uniqueArray);
-        // dd($lembur);
-        if (!$lembur->isEmpty()) {
-            # code...
-            foreach ($lembur as $key => $value) {
-                $pegawai = Pegawai::where('kode_absen', $value->kode_absen)->first();
-                if ($pegawai->status_pegawai ==  1) {
-                    $dataLembur[] = HitungLembur::hitungLemburTetap($value->kode_absen, $periodeAwal, $periodeAkhir);
-                } else {
-                    $dataLembur[] = HitungLembur::hitungLemburKontrak($value->kode_absen, $periodeAwal, $periodeAkhir);
+            // dd($lembur);
+            if (!$lembur->isEmpty()) {
+                # code...
+                foreach ($lembur as $key => $value) {
+                    $pegawai = Pegawai::where('kode_absen', $value->kode_absen)->first();
+                    if ($pegawai->status_pegawai ==  1) {
+                        $dataTetap = HitungLembur::hitungLemburTetap($value->kode_absen, $periodeAwal, $periodeAkhir);
+                        $dataLembur[] = $dataTetap;
+                    } else {
+                        $dataKontrak = HitungLembur::hitungLemburKontrak($value->kode_absen, $periodeAwal, $periodeAkhir);
+                        $dataLembur[] = $dataKontrak;
+                    }
+                    // break;
+                };
+                $totals = 0;
+                foreach ($dataLembur as $value) {
+                    foreach ($value as $values) {
+                        $totals += $values['total'];
+                    }
                 }
-                // break;
+                // dd($totals);
+                // dd($dataLembur);
+
+                // dd($data);
+                // $dataLembur = array_unique($data);
+            } else {
+
+                $dataLembur[] = [];
+                $totals = 0;
             }
-            
-            // dd($data);
-            // $dataLembur = array_unique($data);
-        }else{
 
-            $dataLembur[] = [];
-        }
-       
 
-        
-        // dd($dataLembur);
-       
-        return view('lembur.index', compact('dataLembur'));
-        }else {
+
+            // dd($dataLembur);
+
+            return view('lembur.index', compact('dataLembur', 'totals'));
+        } else {
             $dataLembur[] = [];
-            return view('lembur.index', compact('dataLembur'))->with('error', 'Data Tidak ada');
+            $totals = 0;
+            return view('lembur.index', compact('dataLembur', 'totals'))->with('error', 'Data Tidak ada');
         }
-       
+
 
         // dd($periodeAwal);
     }

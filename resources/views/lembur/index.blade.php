@@ -32,7 +32,7 @@
                              <div class="col-sm-3">
                             <div class="form-group form-float">
                                 <div class="form-line">
-                                    <input type="text" id="periodeawal" name="periodeawal" class="form-control datepickermaster2" value="<?php if(isset($_POST["cari"])){ echo $_POST["periodeawal"]; } ?>" required/>
+                                    <input autocomplete="off" type="text" id="periodeawal" name="periodeawal" class="form-control datepickermaster2" value="<?php if(isset($_POST["cari"])){ echo $_POST["periodeawal"]; } ?>" required/>
                                     <label class="form-label">Periode Awal</label>
                                 </div>
                             </div>
@@ -43,7 +43,7 @@
                         <div class="col-sm-3">
                             <div class="form-group form-float">
                                 <div class="form-line">
-                                    <input type="text" id="periodeakhir" name="periodeakhir" class="form-control datepickermaster2" value="<?php if(isset($_POST["cari"])){ echo $_POST["periodeakhir"]; } ?>" required/>
+                                    <input autocomplete="off" type="text" id="periodeakhir" name="periodeakhir" class="form-control datepickermaster2" value="<?php if(isset($_POST["cari"])){ echo $_POST["periodeakhir"]; } ?>" required/>
                                     <label class="form-label">Periode Akhir</label>
                                 </div>
                             </div>
@@ -86,6 +86,7 @@
                                             <th>JML</th>
                                             <th>U. MKN</th>
                                             <th>TOTAL</th>
+                                           
                                             {{-- <th>JML</th>
                                             <th>KENEK</th>
                                             <th>TOTAL</th> --}}
@@ -116,15 +117,17 @@
                                             <td>@rupiah($items['um'])</td>
                                             <td>@rupiah($items['umb'])</td>
                                             <td>@rupiah($items['total'])</td>
-                                            {{-- <td></td>
-                                            <td></td>
-                                            <td></td> --}}
                                         </tr>
+                                        
                                         @php
                                           $no ++;  
                                         @endphp
                                         @endforeach
                                         @endforeach
+                                        <tr>
+                                            <td style="text-align: right" colspan="12">Total</td>
+                                            <td>@rupiah($totals)</td>
+                                        </tr>
                                         @else
 
                                         @endif
@@ -152,5 +155,8 @@
             
             format: 'd-m-Y'
         });
+    
+    
+    
     </script>
 @endpush

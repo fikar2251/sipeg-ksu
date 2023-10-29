@@ -1,14 +1,4 @@
 @extends('layouts.app')
-@push('custom-css')
-    <style>
-        /* .rincian{
-                border: 1px solid black;
-              }
-              .rincian th, td{
-                border: 1px solid black;
-              } */
-    </style>
-@endpush
 @section('content')
     <section class="content">
         <div class="container-fluid">
@@ -101,7 +91,7 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="pull-right">
-                        <a target="_blank" href="{{route('cetak', $gaji->nip_pegawai)}}" class="btn btn-success waves-effect"><i class="material-icons">print</i><span>Cetak</span></a>
+                        <a target="_blank" href="{{route('cetak',  $gaji->nip_pegawai .'_'.$gaji->bulan)}}" class="btn btn-success waves-effect"><i class="material-icons">print</i><span>Cetak</span></a>
                     </div>
                 </div>
             </div>

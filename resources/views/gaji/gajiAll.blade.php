@@ -67,7 +67,7 @@
                                         <tr>
                                             {{-- <td >{{$loop->iteration}}</td> --}}
                                             <td>
-                                                <a target="_blank" href="{{ route('detailGaji', [$gaji->nip_pegawai, $gaji->bulan]) }}">{{ $gaji->nama }}</a>                                                
+                                                <a target="_blank" href="{{ route('detailGaji', $gaji->nip_pegawai .'_'.$gaji->bulan) }}">{{ $gaji->nama }}</a>                                                
                                             </td>
                                             <td>{{ $gaji->nip_pegawai }}</td>
                                             <td> @rupiah( $gaji->gaji_pokok + $gaji->uang_makan + $gaji->uang_transport)</td>

@@ -10,6 +10,8 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Mail\GajiMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -74,7 +76,7 @@ Route::middleware('auth')->group(function () {
         Route::get('kehadiran', 'kehadiran')->name('kehadiran');
         Route::get('cetak/{cetak}', 'cetak')->name('cetak');
         Route::get('gajiAll', 'gajiAll')->name('gajiAll');
-        Route::get('gaji/{gaji}/{bulan}', 'detailGaji')->name('detailGaji');
+        Route::get('gaji/{gaji}', 'detailGaji')->name('detailGaji');
         Route::post('gaji', 'hitungSalary')->name('hitungSalary');
         Route::post('file-import', 'create')->name('file-import');
     });
@@ -90,6 +92,9 @@ Route::middleware('auth')->group(function () {
         Route::get('lemburAll', 'lemburAll')->name('lemburAll');
         Route::post('lemburFilter', 'filterLembur')->name('lemburFilter');
     });
+
+    Route::post('/testemail', [GajiController::class, 'kirimGaji'])->name('kirimGaji');
+    Route::get('/send', [GajiController::class, 'index'])->name('send');
 });
 
 
