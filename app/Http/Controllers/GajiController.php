@@ -20,7 +20,10 @@ class GajiController extends Controller
      */
     public function index()
     {
-        $pegawai = Pegawai::all();
+        // $pegawai = Pegawai::all();
+        $pegawai = Gaji::select('pegawai.*', 'gaji.*')
+            ->join('pegawai', 'pegawai.nip_pegawai', '=', 'gaji.nik_pegawai')
+            ->get();
         return view('gaji.sendslip', compact('pegawai'));
     }
 
