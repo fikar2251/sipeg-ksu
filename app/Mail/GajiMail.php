@@ -18,16 +18,20 @@ class GajiMail extends Mailable
     // public $customer;
     public $nik;
     public $nama;
+    public $bulan;
+    public $tahun;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($nik, $nama)
+    public function __construct($nik, $nama, $bulan, $tahun)
     {
         $this->nik = $nik;
         $this->nama = $nama;
+        $this->bulan = $bulan;
+        $this->tahun = $tahun;
     }
 
     /**
@@ -52,6 +56,10 @@ class GajiMail extends Mailable
     {
         return new Content(
             view: 'gaji.email',
+            with: [
+                'bulan' => $this->bulan,
+                'tahun' => $this->tahun,
+            ],
         );
     }
 

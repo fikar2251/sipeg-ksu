@@ -145,11 +145,34 @@ class GajiController extends Controller
                             'total_gaji' => $total_gaji,
                             'pph' => $pph
                         ];
-
+                        if ($value->bulan == 1) {
+                            $bulan = 'Januari';
+                        } elseif ($value->bulan == 2) {
+                            $bulan = 'Februari';
+                        } elseif ($value->bulan == 3) {
+                            $bulan = 'Maret';
+                        } elseif ($value->bulan == 4) {
+                            $bulan = 'April';
+                        } elseif ($value->bulan == 5) {
+                            $bulan = 'Mei';
+                        } elseif ($value->bulan == 6) {
+                            $bulan = 'Juni';
+                        } elseif ($value->bulan == 7) {
+                            $bulan = 'Juli';
+                        } elseif ($value->bulan == 8) {
+                            $bulan = 'Agustus';
+                        } elseif ($value->bulan == 10) {
+                            $bulan = 'Oktober';
+                        } elseif ($value->bulan == 11) {
+                            $bulan = 'November';
+                        } else {
+                            $bulan = 'Desember';
+                        }
+                        // dd($bulan);
                         //code...
                         $pdf = Pdf::loadView('gaji.cetak', $print)->setPaper('a4', 'portrait');
                         $pdf->save(public_path('files/' . $value->nik_pegawai . '.pdf'));
-                        Mail::to($data->email)->send(new GajiMail($value->nik_pegawai, $data->nama));
+                        Mail::to($data->email)->send(new GajiMail($value->nik_pegawai, $data->nama, $bulan, $value->tahun));
                         File::delete(public_path('files/' . $value->nik_pegawai . '.pdf'));
                     }
                     return redirect()->back()->with('success', 'Slip gaji berhasil terkirim');
@@ -202,11 +225,66 @@ class GajiController extends Controller
                 'pph' => $pph
             ];
             try {
+                // switch ($dataGaji->bulan) {
+                //     case 1:
+                //         $bulan = 'Januari';
+                //     case 2:
+                //         $bulan = 'Februari';
+                //     case 3:
+                //         $bulan = 'Maret';
+                //     case 4:
+                //         $bulan = 'April';
+                //     case 5:
+                //         $bulan = 'Mei';
+                //     case 6:
+                //         $bulan = 'Juni';
+                //     case 7:
+                //         $bulan = 'Juli';
+                //     case 8:
+                //         $bulan = 'Agustus';
+                //     case 9:
+                //         $bulan = 'September';
+                //     case 10:
+                //         $bulan = 'Oktober';
+                //     case 11:
+                //         $bulan = 'November';
+                //     case 12:
+                //         $bulan = 'Desember';
+                //         break;
+
+                //     default:
+                //         # code...
+                //         break;
+                // }
+                if ($dataGaji->bulan == 1) {
+                    $bulan = 'Januari';
+                } elseif ($dataGaji->bulan == 2) {
+                    $bulan = 'Februari';
+                } elseif ($dataGaji->bulan == 3) {
+                    $bulan = 'Maret';
+                } elseif ($dataGaji->bulan == 4) {
+                    $bulan = 'April';
+                } elseif ($dataGaji->bulan == 5) {
+                    $bulan = 'Mei';
+                } elseif ($dataGaji->bulan == 6) {
+                    $bulan = 'Juni';
+                } elseif ($dataGaji->bulan == 7) {
+                    $bulan = 'Juli';
+                } elseif ($dataGaji->bulan == 8) {
+                    $bulan = 'Agustus';
+                } elseif ($dataGaji->bulan == 10) {
+                    $bulan = 'Oktober';
+                } elseif ($dataGaji->bulan == 11) {
+                    $bulan = 'November';
+                } else {
+                    $bulan = 'Desember';
+                }
+                // dd($bulan);
                 //code...
                 $pdf = Pdf::loadView('gaji.cetak', $print)->setPaper('a4', 'portrait');
                 $pdf->save(public_path('files/' . $dataGaji->nik_pegawai . '.pdf'));
                 Mail::to($data->email)
-                    ->send(new GajiMail($dataGaji->nik_pegawai, $data->nama));
+                    ->send(new GajiMail($dataGaji->nik_pegawai, $data->nama, $bulan, $dataGaji->tahun));
                 File::delete(public_path('files/' . $dataGaji->nik_pegawai . '.pdf'));
                 return redirect()->back()->with('success', 'Slip gaji berhasil terkirim');
             } catch (\Throwable $th) {
