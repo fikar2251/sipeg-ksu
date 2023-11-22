@@ -67,7 +67,15 @@
                                             <td>@rupiah($gaji->pot_bpjs_ket)</td>
                                             <td>@rupiah($gaji->pot_bpjs_kes)</td>
                                             <td>@rupiah($gaji->pot_jp)</td>
-                                            <td>@rupiah($gaji->status_pegawai == 1 ? $gaji->nominal_pinjaman : $pph)</td>
+                                            <td>
+                                                @if ($gaji->status_pegawai == 1)
+                                                    @if ($gaji->sisa_pinjaman === $gaji->pinjaman)
+                                                        @rupiah(0)
+                                                    @else
+                                                    @rupiah($gaji->status_pegawai == 1 ? $gaji->nominal_pinjaman : $pph)
+                                                    @endif
+                                                @endif
+                                            </td>
                                             <td>@rupiah($netto)</td>
                                             <td>@rupiah($gaji->sisa_pinjaman)</td>
                                         </tr>

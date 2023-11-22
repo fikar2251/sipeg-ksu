@@ -109,7 +109,14 @@
                                             <td>@rupiah($gaji->pot_bpjs_ket)</td>
                                             <td>@rupiah($gaji->pot_bpjs_kes)</td>
                                             <td>@rupiah($gaji->pot_jp)</td>
-                                            <td>@rupiah($gaji->nominal_pinjaman)</td>
+                                            <td>
+                                                {{-- @rupiah($gaji->nominal_pinjaman) --}}
+                                                @if ($gaji->sisa_pinjaman === $gaji->pinjaman)
+                                                        @rupiah(0)
+                                                    @else
+                                                    @rupiah($gaji->nominal_pinjaman)
+                                                    @endif
+                                            </td>
                                             <td>@php
                                                 $netto_gaji_tetap = HitungGaji::hitungTetap($gaji->nip_pegawai, $gaji->pinjaman, $gaji->adjustment, $gaji->supervisor, $gaji->bulan);
                                                 echo "Rp. " . number_format($netto_gaji_tetap, 0, ',', '.');

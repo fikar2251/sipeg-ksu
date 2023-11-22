@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Helpers\HitungLembur;
 use App\Models\Lembur;
+use Illuminate\Support\Facades\Session as Session;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Format;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver\RequestPayloadValueResolver;
 
@@ -330,7 +331,7 @@ class LemburController extends Controller
         $jum = count($date);
         // dd($times);
         foreach ($times as $value) {
-            for ($i = 8; $i < $jum - 1; $i++) {
+            for ($i = 7; $i < $jum - 1; $i++) {
                 # code...
                 if (!empty($date[$i]) && $value[1] != 'NIP') {
                     $datas[] = [
@@ -339,7 +340,7 @@ class LemburController extends Controller
                         'out' => $value[$i + 1],
                         'nik' => $value[1],
                         'jumlah_kehadiran' => $value[6],
-                        'keterangan' => $value[7],
+                        // 'keterangan' => $value[7],
                     ];
                 }
             }
@@ -363,7 +364,7 @@ class LemburController extends Controller
                         'tanggal' => $tanggal,
                         'masuk' => $value['in'],
                         'keluar' => $value['out'],
-                        'keterangan' => $value['keterangan'],
+                        // 'keterangan' => $value['keterangan'],
                     ]);
                     // $dataPegawai = Pegawai::where('kode_absen', $value['nik'])->first();
                     // $dataLembur = Lembur::where('nip_pegawai', $dataPegawai->nip_pegawai)->first();
@@ -397,16 +398,16 @@ class LemburController extends Controller
                     $dataLembur[] = HitungLembur::hitungLemburKontrak($value->kode_absen);
                 }
             }
+            $total_tanggal = [];
             // dd($lemburAbsen);
         } else {
 
             $dataLembur[] = [];
+            $total_tanggal = [];
         }
 
 
-
-        // dd($dataLembur);
-        return view('lembur.index', compact('dataLembur'));
+        return view('lembur.index', compact('dataLembur', 'total_tanggal'));
     }
 
     public function filterLembur(Request $request)
@@ -416,10 +417,17 @@ class LemburController extends Controller
 
         $periodeAwal = Carbon::parse($awal)->format('d');
         $periodeAkhir = Carbon::parse($akhir)->format('d');
+
+        $periodeAwalBulan = Carbon::parse($awal)->format('m');
+        $periodeAkhirBulan = Carbon::parse($akhir)->format('m');
         // dd($periodeAwal);
 
-        $lemburAbsen = LemburAbsen::whereBetween('tanggal', [$periodeAwal, $periodeAkhir])->get();
-        if ($lemburAbsen) {
+        $lemburAbsen = LemburAbsen::whereBetween('tanggal', [$periodeAwal, $periodeAkhir])
+            ->where('bulan', [$periodeAwalBulan, $periodeAkhirBulan])
+            ->get();
+        // dd($lemburAbsen);
+        if (!$lemburAbsen->isEmpty()) {
+            // dd('true');
             // $collect =  collect($dataLembur);
             $lembur = $lemburAbsen->unique(function ($item) {
                 return $item->kode_absen;
@@ -439,36 +447,113 @@ class LemburController extends Controller
                     }
                     // break;
                 };
-                $totals = 0;
+                $grand_totals = 0;
                 foreach ($dataLembur as $value) {
                     foreach ($value as $values) {
-                        $totals += $values['total'];
+                        $grand_totals += $values['total'];
                     }
                 }
+
+                $rudianto = LemburAbsen::select('pegawai.*', 'lembur_absen.*', 'status_pekerjaan.nama as nama_status', 'jabatan.nama as nama_jabatan')
+                    // ->join('gaji_absen', 'gaji.kode_absen', '=', 'gaji_absen.kode_absen')
+                    ->join('pegawai', 'pegawai.kode_absen', '=', 'lembur_absen.kode_absen')
+                    ->join('status_pekerjaan', 'status_pekerjaan.id', '=', 'pegawai.status_pegawai')
+                    ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
+                    ->where('lembur_absen.kode_absen', '020')->first();
+
+                $lemburRudianto = LemburAbsen::select('lembur_absen.*', 'pegawai.*', 'lembur_absen.bulan as bulan_lembur', 'status_pekerjaan.nama as nama_status', 'jabatan.nama as nama_jabatan')
+                    ->join('pegawai', 'pegawai.kode_absen', '=', 'lembur_absen.kode_absen')
+                    ->join('gaji', 'gaji.kode_absen', '=', 'pegawai.kode_absen')
+                    ->join('status_pekerjaan', 'status_pekerjaan.id', '=', 'pegawai.status_pegawai')
+                    ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
+                    ->get();
+                // dd($lemburRudianto);
+                $total = cal_days_in_month(CAL_GREGORIAN, date('m'), date('Y'));
+                $totals = 7;
+                for ($i = 0; $i < $total; $i++) {
+                    $total_tanggal[] = $i + 1;
+                }
+
+                // dd($lemburRudianto);
+                // dd($data2);
                 // dd($totals);
                 // dd($dataLembur);
 
                 // dd($data);
                 // $dataLembur = array_unique($data);
+
             } else {
 
                 $dataLembur[] = [];
                 $totals = 0;
+                $rudianto = [];
+                $total_tanggal = [];
+                $lemburRudianto = [];
+                $grand_totals = 0;
+                // dd('salah');
+
+                // return view('lembur.index', compact('dataLembur', 'totals', 'rudianto', 'total_tanggal', 'lemburRudianto', 'grand_totals'))->with('sweet-warning', 'Data Tidak ada');
             }
 
 
 
             // dd($dataLembur);
-
-            return view('lembur.index', compact('dataLembur', 'totals'));
+            Session::put('success', 'Sukses');
+            Session::forget('error');
+            return view('lembur.index', compact('dataLembur', 'totals', 'rudianto', 'total_tanggal', 'lemburRudianto', 'grand_totals'))->with('success', 'Sukses!');
         } else {
+            // dd(session('error'));
             $dataLembur[] = [];
             $totals = 0;
-            return view('lembur.index', compact('dataLembur', 'totals'))->with('error', 'Data Tidak ada');
+            $rudianto = [];
+            $total_tanggal = [];
+            $lemburRudianto = [];
+            $grand_totals = 0;
+            Session::put('error', 'data tidak ada');
+            // dd(Session::get('error'));
+            return view('lembur.index', compact('dataLembur', 'totals', 'rudianto', 'total_tanggal', 'lemburRudianto', 'grand_totals'))->with('error', 'Data Tidak ada');
         }
 
 
         // dd($periodeAwal);
+    }
+
+    public function updateAbsen(Request $request)
+    {
+        $explode = explode('-', $request->tanggal);
+        $tanggal = $explode[0];
+        $bulan = $explode[1];
+        $tahun = $explode[2];
+        try {
+            LemburAbsen::where('kode_absen', $request->kode_absen)
+                ->where([
+                    'tanggal' => $tanggal,
+                    'bulan' => $bulan,
+                    'tahun' => $tahun
+                ])
+                ->update(
+                    [
+                        'keterangan' => $request->ket_tdk_hadir
+                    ]
+                );
+            // $data = Gaji::where('kode_absen', $request->kode_absen)
+            //     ->where([
+            //         'bulan' => $bulan,
+            //         'tahun' => $tahun
+            //     ])->first();
+            // $status = StatusKaryawan::where('id', 1)->first();
+            // Gaji::where('kode_absen', $request->kode_absen)
+            //     ->where([
+            //         'bulan' => $bulan,
+            //         'tahun' => $tahun
+            //     ])->update([
+            //         'uang_makan' => ($data->jumlah_masuk - 1) * $status->uang_makan,
+            //         'uang_transport' => ($data->jumlah_masuk - 1) * $status->uang_transport,
+            //     ]);
+            return redirect()->back()->with('success', 'Successfully updated');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
+        }
     }
 
     /**

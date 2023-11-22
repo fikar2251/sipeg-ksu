@@ -35,7 +35,12 @@ class HitungGaji
             $total_gaji = $gaji->uang_makan + $gaji->uang_transport + $pegawai->gaji_pokok + $adjustment + $supervisor;
         }
         //netto gaji
-        $netto_gaji = $total_gaji - $gaji->pot_bpjs_ket - $gaji->pot_bpjs_kes - $gaji->pot_jp - $gaji->nominal_pinjaman;
+        if ($gaji->sisa_pinjaman === $gaji->pinjaman) {
+            # code...
+            $netto_gaji = $total_gaji - $gaji->pot_bpjs_ket - $gaji->pot_bpjs_kes - $gaji->pot_jp;
+        } else {
+            $netto_gaji = $total_gaji - $gaji->pot_bpjs_ket - $gaji->pot_bpjs_kes - $gaji->pot_jp - $gaji->nominal_pinjaman;
+        }
 
         return $netto_gaji;
     }
@@ -95,10 +100,10 @@ class HitungGaji
 
         //pkp setahun
         $pkp = $netto_gaji_setahun - $ptkp->nilai;
-
+        // dd($ptkp->nilai);
         //pkp tanpa thr
         $pkp_tanpa_thr = $pkp - $thr;
-
+        // dd($pkp);
         //pph-21 tanpa thr
         $pph = PPH::all();
         foreach ($pph as $key => $value) {
@@ -131,7 +136,12 @@ class HitungGaji
         } else {
             $pembagi = 12;
         }
-        $pph21 = round($pph_tanpa_thr / $pembagi + $pph_thr, 0);
+        // dd($pph_thr);
+        if ($pph_tanpa_thr != 0) {
+            $pph21 = round($pph_tanpa_thr / $pembagi + $pph_thr, 0);
+        } else {
+            $pph21 = 0;
+        }
 
         return $pph21;
     }
@@ -164,7 +174,7 @@ class HitungGaji
         $pot_bpjs_ket = $pegawai->gaji_pokok * $status_karyawan->pot_bpjs_ket / 100;
         if ($pegawai->gaji_pokok < $umr->nominal) {
             $pot_bpjs_kes = round($umr->nominal * $status_karyawan->pot_bpjs_kes_max / 100, 0);
-        } elseif ($status_karyawan->gaji->pokok > $umr->nominal_atas) {
+        } elseif ($status_karyawan->gaji_pokok > $umr->nominal_atas) {
             $pot_bpjs_kes =  round($pegawai->nominal_atas * $status_karyawan->pot_bpjs_kes_max / 100);
         } else {
             $pot_bpjs_kes =  round($pegawai->gaji_pokok * $status_karyawan->pot_bpjs_kes_max / 100);
@@ -178,19 +188,23 @@ class HitungGaji
         $check = Gaji::where('kode_absen', $kode_absen)
             ->where('bulan', $detail_absen->bulan)
             ->first();
-        $minusbulan = $detail_absen->bulan - 1;
+        if ($detail_absen->bulan == 1) {
+            $minusbulan = 12;
+        } else {
+            $minusbulan = $detail_absen->bulan - 1;
+        }
         $data2 = Gaji::where('kode_absen', $kode_absen)
             ->where('bulan', $minusbulan)
             ->first();
         // dd($data2);
         if ($data2 != null) {
-            if ($data2->pinjaman != 0) {
+            if ($data2->sisa_pinjaman != 0) {
                 $nominal = $data2->pinjaman / $data2->tenor;
                 $sisa_pinjaman = $data2->sisa_pinjaman - $nominal;
                 Gaji::where('kode_absen', $kode_absen)->where('bulan', $detail_absen->bulan)->update([
                     // 'nip_pegawai' => $data2->nik_pegawai,
-                    // 'pinjaman' => $data2->pinjaman,
-                    // 'tenor' => $data2->tenor,
+                    'pinjaman' => $data2->pinjaman,
+                    'tenor' => $data2->tenor,
                     'nominal_pinjaman' => $nominal,
                     'sisa_pinjaman' => $sisa_pinjaman,
                 ]);
@@ -250,10 +264,10 @@ class HitungGaji
         $pot_bpjs_ket = $pegawai->gaji_pokok * $status_karyawan->pot_bpjs_ket / 100;
         if ($pegawai->gaji_pokok < $umr->nominal) {
             $pot_bpjs_kes = round($umr->nominal * $status_karyawan->pot_bpjs_kes_max / 100, 0);
-        } elseif ($status_karyawan->gaji->pokok > $umr->nominal_atas) {
+        } elseif ($status_karyawan->gaji_pokok > $umr->nominal_atas) {
             $pot_bpjs_kes =  round($pegawai->nominal_atas * $status_karyawan->pot_bpjs_kes_max / 100);
         } else {
-            $pot_bpjs_kes =  round($pegawai->gaji->pokok * $status_karyawan->pot_bpjs_kes_max / 100);
+            $pot_bpjs_kes =  round($pegawai->gaji_pokok * $status_karyawan->pot_bpjs_kes_max / 100);
         }
 
         if ($pegawai->gaji_pokok < $status_karyawan->pot_jp_nilai) {
@@ -268,15 +282,17 @@ class HitungGaji
         $data2 = Gaji::where('kode_absen', $kode_absen)
             ->where('bulan', $bulan - 1)
             ->first();
-        if ($data2->pinjaman != 0) {
-            $sisa_pinjaman = $data2->pinjaman - $data2->nominal_pinjaman;
-            Pinjaman::create([
-                'nip_pegawai' => $data2->nik_pegawai,
-                'pinjaman' => $data2->pinjaman,
-                'tenor' => $data2->tenor,
-                'nominal_pinjaman' => $data2->nominal_pinjaman,
-                'sisa_pinjaman' => $sisa_pinjaman,
-            ]);
+        if ($data2 != null) {
+            if ($data2->sisa_pinjaman != 0) {
+                $sisa_pinjaman = $data2->pinjaman - $data2->nominal_pinjaman;
+                Pinjaman::create([
+                    'nip_pegawai' => $data2->nik_pegawai,
+                    'pinjaman' => $data2->pinjaman,
+                    'tenor' => $data2->tenor,
+                    'nominal_pinjaman' => $data2->nominal_pinjaman,
+                    'sisa_pinjaman' => $sisa_pinjaman,
+                ]);
+            }
         }
         if ($check === null) {
             // dd($check);

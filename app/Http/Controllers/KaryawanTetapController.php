@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\Karyawan;
 use App\Models\Departemen;
 use App\Models\Jabatan;
+use App\Models\DetailAbsen;
 use App\Models\KaryawanTetap;
 use App\Models\Pegawai;
 use Illuminate\Http\Request;
@@ -25,12 +26,20 @@ class KaryawanTetapController extends Controller
             ->orderBy('id', 'asc')
             ->where('status_pegawai', 1)->get();
 
+        $cuti = DetailAbsen::where('keterangan', 'C')->get();
+        // ->where('pegawai.nip_pegawai', '03101989-01')->count();
+        // ->count();
+
+        // dd($pegawai);
+        // dd($cuti);
+
         $count = count($pegawai);
         // dd($count);
         // dd($pegawai);
         return view('karyawan.tetap.index', [
             'pegawai' => $pegawai,
-            'jumlah_pegawai' => $count
+            'jumlah_pegawai' => $count,
+            'cuti' => $cuti,
         ]);
     }
 

@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function () {
         Route::get('gaji/{gaji}', 'detailGaji')->name('detailGaji');
         Route::post('gaji', 'hitungSalary')->name('hitungSalary');
         Route::post('file-import', 'create')->name('file-import');
+        Route::post('update-absen', 'updateAbsen')->name('update-absen');
     });
 
     Route::controller(UserController::class)->group(function () {
@@ -91,10 +92,12 @@ Route::middleware('auth')->group(function () {
         Route::post('import-lembur', 'store')->name('import-lembur');
         Route::get('lemburAll', 'lemburAll')->name('lemburAll');
         Route::post('lemburFilter', 'filterLembur')->name('lemburFilter');
+        Route::post('update-absen-rudianto', 'updateAbsen')->name('update-absen-rudianto');
     });
 
     Route::post('/testemail', [GajiController::class, 'kirimGaji'])->name('kirimGaji');
     Route::get('/send', [GajiController::class, 'index'])->name('send');
+    Route::get('/pph', [GajiController::class, 'pph'])->name('pph');
 });
 
 

@@ -66,19 +66,23 @@
                                         <th>Nama Lengkap</th>
                                         <th>NIP</th>
                                         <th>Jabatan</th>
-                                        <th>Jenis Kelamin</th>
+                                        <th>Sisa Cuti</th>
                                         <th>Aksi</th>
                                         {{-- <th>Salary</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($pegawai as $data)
+                                    @foreach ($pegawai as $indes => $data)
                                     <tr>
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{$data->nama}}</td>
                                         <td>{{$data->nip_pegawai}}</td>
                                         <td>{{$data->nama_jabatan}}</td>
-                                        <td>{{$data->jenis_kelamin == 'L' ? "Laki-laki" : "Perempuan" }} </td>
+                                        @php
+                                        $sisa_cuti = $cuti->where('kode_absen', $data->kode_absen)->count();
+                                        // dd($sisa_cuti);
+                                        @endphp
+                                        <td>{{12 - $sisa_cuti }} </td>
                                         <td class="text-center">
                                             <a title="DETIL KARYAWAN" href="#" role="button" class="detailKaryawan" data-id="" data-toggle="modal" data-target="#defaultdetailKaryawan{{$data->id}}"><i class="material-icons" aria-hidden="true">zoom_in</i></a>
                                             <a title="UBAH KARYAWAN" href="{{route('editkaryawanTetap', $data->id)}}"><i class="material-icons" aria-hidden="true">edit</i></a>

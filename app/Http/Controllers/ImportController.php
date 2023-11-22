@@ -53,9 +53,48 @@ class ImportController extends Controller
             ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
             ->get();
 
-        // dd($count);
+        $data = DetailAbsen::select('gaji_absen.*', 'pegawai.*', 'gaji.*', 'status_pekerjaan.nama as nama_status', 'jabatan.nama as nama_jabatan')
+            ->join('pegawai', 'pegawai.kode_absen', '=', 'gaji_absen.kode_absen')
+            ->join('gaji', 'gaji.kode_absen', '=', 'pegawai.kode_absen')
+            ->join('status_pekerjaan', 'status_pekerjaan.id', '=', 'pegawai.status_pegawai')
+            ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
+            ->get();
+        $data2 = Gaji::select('pegawai.*', 'gaji.*', 'status_pekerjaan.nama as nama_status', 'jabatan.nama as nama_jabatan')
+            // ->join('gaji_absen', 'gaji.kode_absen', '=', 'gaji_absen.kode_absen')
+            ->join('pegawai', 'pegawai.kode_absen', '=', 'gaji.kode_absen')
+            ->join('status_pekerjaan', 'status_pekerjaan.id', '=', 'pegawai.status_pegawai')
+            ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
+            ->get();
+        // dd($data);
+        // $data3 = [];
+        foreach ($data2 as $key => $datas) {
+            $tanggal = DetailAbsen::where('kode_absen', $datas->kode_absen)->get();
+            // foreach ($tanggal as $tgl) {
+            //     $tanggals[] = $tgl->tanggal;
+            // }
+            $data3[] = [
+                'nama' => $datas->nama,
+                'nip' => $datas->nip_pegawai,
+                'jabatan' => $datas->nama_jabatan,
+                'status' => $datas->nama_status,
+                'bulan' => $datas->bulan,
+                'tahun' => $datas->tahun,
+                'tanggal' => [],
+            ];
+        }
+        $total = cal_days_in_month(CAL_GREGORIAN, date('m'), date('Y'));
+        $totals = 31;
+        for ($i = 0; $i < $total; $i++) {
+            $total_tanggal[] = $i + 1;
+        }
+        // dd($total_tanggal);
+        // $total_tanggal = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+
+        // dd($data2);
         return view('import.kehadiran', [
-            'pegawai' => $pegawai
+            'pegawai' => $data2,
+            'tanggal' => $data,
+            'total_tanggal' => $total_tanggal
         ]);
     }
 
@@ -72,7 +111,7 @@ class ImportController extends Controller
         if ($tenor) {
             $nominal_pinjaman = $pinjaman / $tenor;
         } elseif ($nominal_pinjaman) {
-            $tenor = $pinjaman / $tenor;
+            $tenor = $pinjaman / $nominal_pinjaman;
         } else {
             $tenor = 0;
             $nominal_pinjaman = 0;
@@ -81,50 +120,56 @@ class ImportController extends Controller
             //code...
             $data = Gaji::where('nik_pegawai', $nip)->first();
             $pegawai = Pegawai::where('nip_pegawai', $nip)->first();
-            if ($pegawai->status_pegawai == 1) {
-                $update = Gaji::where('nik_pegawai', $nip)->update([
-                    'adjustment' => $adjustment,
-                    'pinjaman' => $pinjaman,
-                    'supervisor' => $supervisor,
-                    'tenor' => $tenor,
-                    'nominal_pinjaman' => $nominal_pinjaman,
-                    'sisa_pinjaman' => $pinjaman,
-                    'keterangan_adjustment' => $keterangan_adjustment
-                ]);
-                $data_pinjaman = Pinjaman::where('nip_pegawai', $nip)->first();
-                if ($pinjaman != 0) {
-                    Pinjaman::create([
-                        'nip_pegawai' => $nip,
-                        'pinjaman' => $pinjaman,
-                        'tenor' => $tenor,
-                        'nominal_pinjaman' => $nominal_pinjaman,
-                        'sisa_pinjaman' => $pinjaman
-                    ]);
-                }
-            } elseif ($pegawai->status_pegawai == 2) {
-                # code...
-                if ($data->nik_pegawai == '22052013-21') {
-                    $update = Gaji::where('nik_pegawai', $nip)->update([
-                        'adjustment' => $data->premi_bpjs_kes - 50000,
-                        'pinjaman' => $pinjaman,
-                        'tenor' => $tenor,
-                        'nominal_pinjaman' => $nominal_pinjaman,
-                        'thr' => $thr,
-                    ]);
-                } else {
+            $sisa_pinjaman = ($pegawai->gaji_pokok + $data->uang_makan + $data->uang_transport) - $data->pinjaman;
+            // dd($sisa_pinjaman);
+            if ($pinjaman > $sisa_pinjaman) {
+                return redirect()->back()->with('error', 'Pinjaman melebihi batas!');
+            } else {
+                if ($pegawai->status_pegawai == 1) {
                     $update = Gaji::where('nik_pegawai', $nip)->update([
                         'adjustment' => $adjustment,
                         'pinjaman' => $pinjaman,
+                        'supervisor' => $supervisor,
                         'tenor' => $tenor,
                         'nominal_pinjaman' => $nominal_pinjaman,
-                        'thr' => $thr,
+                        'sisa_pinjaman' => $pinjaman,
+                        'keterangan_adjustment' => $keterangan_adjustment
                     ]);
+                    $data_pinjaman = Pinjaman::where('nip_pegawai', $nip)->first();
+                    if ($pinjaman != 0) {
+                        Pinjaman::create([
+                            'nip_pegawai' => $nip,
+                            'pinjaman' => $pinjaman,
+                            'tenor' => $tenor,
+                            'nominal_pinjaman' => $nominal_pinjaman,
+                            'sisa_pinjaman' => $pinjaman
+                        ]);
+                    }
+                } elseif ($pegawai->status_pegawai == 2) {
+                    # code...
+                    if ($data->nik_pegawai == '22052013-21') {
+                        $update = Gaji::where('nik_pegawai', $nip)->update([
+                            'adjustment' => $data->premi_bpjs_kes - 50000,
+                            'pinjaman' => $pinjaman,
+                            'tenor' => $tenor,
+                            'nominal_pinjaman' => $nominal_pinjaman,
+                            'thr' => $thr,
+                        ]);
+                    } else {
+                        $update = Gaji::where('nik_pegawai', $nip)->update([
+                            'adjustment' => $adjustment,
+                            'pinjaman' => $pinjaman,
+                            'tenor' => $tenor,
+                            'nominal_pinjaman' => $nominal_pinjaman,
+                            'thr' => $thr,
+                        ]);
+                    }
                 }
             }
-            return redirect()->route('detailGaji', [$nip, $data->bulan])->with('success', 'update berhasil');
+            return redirect()->route('detailGaji', $nip . '_' . $data->bulan)->with('success', 'update berhasil');
         } catch (\Throwable $th) {
             //throw $th;
-            return redirect()->route('detailGaji', [$nip, $data->bulan])->with('error', $th->getMessage());
+            return redirect()->route('detailGaji', $nip . '_' . $data->bulan)->with('error', $th->getMessage());
         }
         // dd($nip);
         // $netto_gaji = HitungGaji::hitung($nip, $pinjaman, $adjustment);
@@ -150,6 +195,7 @@ class ImportController extends Controller
                 $netto_gaji_tetap = HitungGaji::hitungTetap($data->nip_pegawai, $data->pinjaman, $data->adjustment, $data->supervisor, $data->bulan);
             }
             foreach ($dataKontrak as $key => $datas) {
+                // dd($dataKontrak);
                 $total_gaji = HitungGaji::hitungKontrak($datas->nip_pegawai, $datas->adjustment);
                 $pph = HitungGaji::hitungPPH($datas->nip_pegawai, $datas->thr);
                 $netto_kontrak = [$total_gaji - $pph];
@@ -319,17 +365,17 @@ class ImportController extends Controller
                 $tanggal = Carbon::parse($value['tgl'])->format("d");
                 if ($request->filter == $bulan) {
                     // dd($value);
-                    if ($value['in'] !== '00:00') {
-                        $insert =  DetailAbsen::create([
-                            'kode_absen' => $value['nik'],
-                            'bulan' => $bulan,
-                            'tahun' => $tahun,
-                            'tanggal' => $tanggal,
-                            'masuk' => $value['in'],
-                            'keluar' => $value['out'],
-                        ]);
-                        $this->hitungGaji($value['jumlah_kehadiran'], $value['nik'], $year, $bulan);
-                    }
+                    // if ($value['in'] !== '00:00') {
+                    $insert =  DetailAbsen::create([
+                        'kode_absen' => $value['nik'],
+                        'bulan' => $bulan,
+                        'tahun' => $tahun,
+                        'tanggal' => $tanggal,
+                        'masuk' => $value['in'],
+                        'keluar' => $value['out'],
+                    ]);
+                    $this->hitungGaji($value['jumlah_kehadiran'], $value['nik'], $year, $bulan);
+                    // }
                 }
             }
             return redirect()->to('/kehadiran')->with('success', 'Import success!');
@@ -344,20 +390,67 @@ class ImportController extends Controller
         if ($pegawai != null) {
             # code...
             if ($pegawai->status_pegawai == 1) {
+                // dd('true');
                 try {
-                    HitungGaji::masterTetap($pegawai, $kode_absen, $kehadiran, $year, $bulan);
-
+                    $hitung = HitungGaji::masterTetap($pegawai, $kode_absen, $kehadiran, $year, $bulan);
+                    // dd($hitung);
                     //code...
                 } catch (\Throwable $th) {
                     return $th->getMessage();
                 }
             } elseif ($pegawai->status_pegawai == 2) {
-                HitungGaji::masterKontrak($pegawai, $kode_absen, $kehadiran, $year, $bulan);
+                try {
+                    HitungGaji::masterKontrak($pegawai, $kode_absen, $kehadiran, $year, $bulan);
+                    // dd($hitung);
+                    //code...
+                } catch (\Throwable $th) {
+                    return $th->getMessage();
+                }
+
                 // $detail_absen = DetailAbsen::where('kode_absen', $kode_absen)->first();
 
             }
         }
     }
+
+    public function updateAbsen(Request $request)
+    {
+        $explode = explode('-', $request->tanggal);
+        $tanggal = $explode[0];
+        $bulan = $explode[1];
+        $tahun = $explode[2];
+        try {
+            DetailAbsen::where('kode_absen', $request->kode_absen)
+                ->where([
+                    'tanggal' => $tanggal,
+                    'bulan' => $bulan,
+                    'tahun' => $tahun
+                ])
+                ->update(
+                    [
+                        'keterangan' => $request->ket_tdk_hadir
+                    ]
+                );
+            // $data = Gaji::where('kode_absen', $request->kode_absen)
+            //     ->where([
+            //         'bulan' => $bulan,
+            //         'tahun' => $tahun
+            //     ])->first();
+            // $status = StatusKaryawan::where('id', 1)->first();
+            // Gaji::where('kode_absen', $request->kode_absen)
+            //     ->where([
+            //         'bulan' => $bulan,
+            //         'tahun' => $tahun
+            //     ])->update([
+            //         'uang_makan' => ($data->jumlah_masuk - 1) * $status->uang_makan,
+            //         'uang_transport' => ($data->jumlah_masuk - 1) * $status->uang_transport,
+            //     ]);
+            return redirect()->back()->with('success', 'Successfully updated');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *
