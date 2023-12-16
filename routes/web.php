@@ -91,13 +91,14 @@ Route::middleware('auth')->group(function () {
         Route::get('importlembur', 'import')->name('importlembur');
         Route::post('import-lembur', 'store')->name('import-lembur');
         Route::get('lemburAll', 'lemburAll')->name('lemburAll');
-        Route::post('lemburFilter', 'filterLembur')->name('lemburFilter');
+        Route::get('lemburFilter', 'filterLembur')->name('lemburFilter');
         Route::post('update-absen-rudianto', 'updateAbsen')->name('update-absen-rudianto');
     });
 
     Route::post('/testemail', [GajiController::class, 'kirimGaji'])->name('kirimGaji');
     Route::get('/send', [GajiController::class, 'index'])->name('send');
     Route::get('/pph', [GajiController::class, 'pph'])->name('pph');
+    Route::get('/datapph', [GajiController::class, 'dataPph'])->name('dataPph');
 });
 
 

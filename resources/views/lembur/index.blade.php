@@ -26,7 +26,7 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
                         <div class="body">
-                            <form action=" {{route('lemburFilter')}} " method="POST">
+                            <form action=" {{route('lemburFilter')}} " method="GET">
                                 @csrf
                             <div class="row">
                              <div class="col-sm-3">
@@ -373,6 +373,21 @@
                                                 readonly>
                                         </div>
                                     </div>
+
+                                    {{-- <label style="margin-top: 20px;" for="adjusment">Awal</label> --}}
+                                    {{-- <div class="form-group">
+                                        <div class="form-line"> --}}
+                                            <input hidden type="hidden" class="form-control" name="awal" id="awal"
+                                                readonly>
+                                        {{-- </div>
+                                    </div> --}}
+                                    {{-- <label style="margin-top: 20px;" for="adjusment">Akhir</label> --}}
+                                    {{-- <div class="form-group">
+                                        <div class="form-line"> --}}
+                                            <input  type="hidden" class="form-control" name="akhir" id="akhir"
+                                                readonly>
+                                        {{-- </div>
+                                    </div> --}}
                                     <!-- </div> -->
                                 </div>
                                 {{-- <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
@@ -422,10 +437,15 @@
                 {{-- alert('Please enter') --}}
                 var nip = $(this).attr('data-id');
                 var tanggal = $(this).attr('data-tanggal');
+                var periodeAwal = $('#periodeawal').val();
+                var periodeAkhir = $('#periodeakhir').val();
+                // var tanggal = $(this).attr('data-tanggal');
 
                 console.log(tanggal);
                 $('#kode_absen').val(nip);
                 $('#tanggal').val(tanggal);
+                $('#awal').val(periodeAwal);
+                $('#akhir').val(periodeAkhir);
             });
     
     </script>

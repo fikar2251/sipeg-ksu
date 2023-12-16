@@ -53,7 +53,7 @@
                 </ul>
             </li>
 
-            <li @class(['active' => request()->is('import') || request()->is('kehadiran') ]) >
+            <li @class(['active' => request()->is('import') || request()->is('kehadiran') || request()->is('importlembur') ]) >
                 <a href="javascript:void(0);" class="menu-toggle">
                     <i class="material-icons">view_list</i>
                     <span>Absensi</span>
@@ -88,6 +88,12 @@
                 <a href="{{route('gajiAll')}}">
                     <i class="material-icons">attach_money</i>
                     <span>Penggajian</span>
+                </a>
+            </li>
+            <li @class(['active' => request()->is('pph')]) >
+                <a href="{{route('pph')}}">
+                    <i class="material-icons">attach_money</i>
+                    <span>PPH</span>
                 </a>
             </li>
               <li @class(['active' => request()->is('lemburAll') || request()->is('lemburFilter')]) >

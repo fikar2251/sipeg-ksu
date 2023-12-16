@@ -412,8 +412,8 @@ class LemburController extends Controller
 
     public function filterLembur(Request $request)
     {
-        $awal = $request->periodeawal;
-        $akhir = $request->periodeakhir;
+        $awal = request()->get('periodeawal');
+        $akhir = request()->get('periodeakhir');
 
         $periodeAwal = Carbon::parse($awal)->format('d');
         $periodeAkhir = Carbon::parse($akhir)->format('d');
@@ -423,7 +423,7 @@ class LemburController extends Controller
         // dd($periodeAwal);
 
         $lemburAbsen = LemburAbsen::whereBetween('tanggal', [$periodeAwal, $periodeAkhir])
-            ->where('bulan', [$periodeAwalBulan, $periodeAkhirBulan])
+            ->whereBetween('bulan', [$periodeAwalBulan, $periodeAkhirBulan])
             ->get();
         // dd($lemburAbsen);
         if (!$lemburAbsen->isEmpty()) {
@@ -459,7 +459,10 @@ class LemburController extends Controller
                     ->join('pegawai', 'pegawai.kode_absen', '=', 'lembur_absen.kode_absen')
                     ->join('status_pekerjaan', 'status_pekerjaan.id', '=', 'pegawai.status_pegawai')
                     ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
-                    ->where('lembur_absen.kode_absen', '020')->first();
+                    ->where('lembur_absen.kode_absen', '020')
+                    ->whereBetween('tanggal', [$periodeAwal, $periodeAkhir])
+                    ->whereBetween('bulan', [$periodeAwalBulan, $periodeAkhirBulan])
+                    ->first();
 
                 $lemburRudianto = LemburAbsen::select('lembur_absen.*', 'pegawai.*', 'lembur_absen.bulan as bulan_lembur', 'status_pekerjaan.nama as nama_status', 'jabatan.nama as nama_jabatan')
                     ->join('pegawai', 'pegawai.kode_absen', '=', 'lembur_absen.kode_absen')
@@ -551,6 +554,12 @@ class LemburController extends Controller
             //         'uang_transport' => ($data->jumlah_masuk - 1) * $status->uang_transport,
             //     ]);
             return redirect()->back()->with('success', 'Successfully updated');
+            // dd('true');
+            // return redirect()->route('lemburFilter')->withInput([
+            //     'periodeawal' => $request->awal,
+            //     'periodeakhir' => $request->akhir,
+            // ]);
+            // return back()->withInput();
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', $th->getMessage());
         }

@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
+use Yajra\DataTables\Facades\DataTables;
 
 class GajiController extends Controller
 {
@@ -298,6 +299,12 @@ class GajiController extends Controller
 
     public function pph()
     {
+
+        return view('gaji.pph');
+    }
+
+    public function dataPph(Request $request)
+    {
         $dataGaji = Gaji::select('gaji.*', 'pegawai.*', 'jabatan.nama as nama_jabatan')
             ->join('pegawai', 'pegawai.nip_pegawai', '=', 'gaji.nik_pegawai')
             ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')->get();
@@ -429,10 +436,7 @@ class GajiController extends Controller
         } else {
             $dataPph = [];
         }
-        // foreach ($dataPph  as $pph) {
-        //     dd($pph['nama']);
-        // }
 
-        return view('gaji.pph', compact('dataPph'));
+        return DataTables::of($dataPph)->make(true);
     }
 }
