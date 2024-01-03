@@ -41,13 +41,13 @@
                                         <button type="submit" name="upload" value="Submit"
                                             class="btn btn-lg btn-success">Submit</button>
                                     </div>
+                                </form>
                                     <div class="col-sm-4">
                           <button class="btn btn-warning">
-                          <a href="{{asset('public/Template_Data_Absen.xlsx')}}" download>Download Template</a>
+                          <a href="{{asset('Template_Data_Absen.xlsx')}}" download>Download Template</a>
                           </button>
                           </div>
                                 </div>
-                            </form>
 
 
                         </div>

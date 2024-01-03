@@ -46,6 +46,20 @@
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
+                                    <p>
+                                     <b>Pilih Status</b>
+                                    </p>
+                                         <select name="status" id="realisasiInput" class="form-control">
+                                             <option value="">-- Status --</option>
+                                             <option value="1" @selected($data->status == '1')>Aktif</option>
+                                             <option value="0" @selected($data->status == '0')>Tidak Aktif</option>
+                                         </select>
+                                         @error('jenis_kelamin')
+                                         <span class="text-danger">{{$message}}</span>
+                                         @enderror
+                               
+                                 </div>
+                                <div class="col-sm-12">
                                     <label for="tempat_lahir">Alamat</label>
                                     <div class="form-group form-float">
                                         <div class="form-line">
@@ -202,7 +216,7 @@
                                             <input type="text" name="tgl_masuk_kerja" class="form-control datepicker" placeholder="Please choose a date...">
                                         </div> --}}
                                             <div class="form-line" >
-                                                <input id="bs_datepicker_container" name="tgl_masuk_kerja" value="{{\Carbon\Carbon::parse($data->tanggal_masuk_kerja)->format('d-m-Y')}}"  type="text" class="form-control">
+                                                <input id="bs_datepicker_container" name="tgl_masuk_kerja" value="{{\Carbon\Carbon::parse($data->tanggal_masuk_kerja)->format('Y-m-d')}}"  type="text" class="form-control">
                                             </div>
                                             @error('tgl_masuk_kerja')
                                             <span class="text-danger">{{$message}}</span>
@@ -215,7 +229,7 @@
                                     <label for="tgl_lahir">Tanggal Lahir</label>
                                     <div class="form-group">
                                         <div class="form-line" >
-                                            <input id="tgl_lahir" name="tgl_lahir" value="{{\Carbon\Carbon::parse($data->tanggal_lahir)->format('d-m-Y')}}"  type="text" class="form-control" >
+                                            <input id="tgl_lahir" name="tgl_lahir" value="{{\Carbon\Carbon::parse($data->tanggal_lahir)->format('Y-m-d')}}"  type="text" class="form-control" >
                                         </div>
                                         @error('tgl_lahir')
                                         <span class="text-danger">{{$message}}</span>

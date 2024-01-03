@@ -24,7 +24,9 @@ class KaryawanTetapController extends Controller
             ->join('departemen', 'departemen.id', '=', 'pegawai.departemen')
             ->orderBy('created_at', 'desc')
             ->orderBy('id', 'asc')
-            ->where('status_pegawai', 1)->get();
+            ->where('status_pegawai', 1)
+            ->where('status', 1)
+            ->get();
 
         $cuti = DetailAbsen::where('keterangan', 'C')->get();
         // ->where('pegawai.nip_pegawai', '03101989-01')->count();
@@ -152,6 +154,7 @@ class KaryawanTetapController extends Controller
      */
     public function update(Request $request, KaryawanTetap $karyawan)
     {
+        // dd($request->status);
         $validated =  $request->validate([
             'nama' => 'required',
             'nip' => 'required',
@@ -161,7 +164,7 @@ class KaryawanTetapController extends Controller
             'bpjs_kes' => 'required',
             'bpjs_ket' => 'required',
             'npwp' => 'required',
-            'email' => 'required|email',
+            // 'email' => 'required|email',
             'gaji_pokok' => 'required',
             'ptkp' => 'required',
             'departemen' => 'required',
@@ -169,8 +172,9 @@ class KaryawanTetapController extends Controller
             'tgl_masuk_kerja' => 'required',
             'tgl_lahir' => 'required',
             'tempat_lahir' => 'required',
+            'status' => 'required',
         ]);
-
+        // dd($validated);
         try {
             $insert = Pegawai::where('id', $karyawan->id)->update([
                 'nama' => $request->nama,
@@ -191,6 +195,7 @@ class KaryawanTetapController extends Controller
                 'tempat_lahir' => $request->tempat_lahir,
                 'status_pegawai' => 1,
                 'kode_absen' => 0,
+                'status' => $request->status,
             ]);
 
 
@@ -209,5 +214,31 @@ class KaryawanTetapController extends Controller
     public function destroy(KaryawanTetap $karyawan)
     {
         //
+    }
+
+    public function karyawanTidakAktif()
+    {
+        $pegawai = Pegawai::select('pegawai.*', 'jabatan.nama as nama_jabatan', 'departemen.nama as nama_departemen')
+            ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
+            ->join('departemen', 'departemen.id', '=', 'pegawai.departemen')
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'asc')
+            ->where('status', 0)->get();
+
+        $cuti = DetailAbsen::where('keterangan', 'C')->get();
+        // ->where('pegawai.nip_pegawai', '03101989-01')->count();
+        // ->count();
+
+        // dd($pegawai);
+        // dd($cuti);
+
+        $count = count($pegawai);
+        // dd($count);
+        // dd($pegawai);
+        return view('karyawan.tetap.tidak-aktif', [
+            'pegawai' => $pegawai,
+            'jumlah_pegawai' => $count,
+            'cuti' => $cuti,
+        ]);
     }
 }

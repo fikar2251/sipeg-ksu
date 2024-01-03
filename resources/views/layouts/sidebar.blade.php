@@ -34,7 +34,10 @@
                     <span>Beranda</span>
                 </a>
             </li>
-            <li @class(['active' => request()->is('karyawanTetap') || request()->is('karyawanKontrak') || request()->is('karyawanTetap/create') ||  request()->is('karyawanTetap/edit/*') || request()->is('karyawanKontrak/edit/*') || request()->is('karyawanKontrak/create')]) >
+            @can('karyawan')
+                
+            
+            <li @class(['active' => request()->is('karyawanTetap') || request()->is('karyawanKontrak') || request()->is('karyawanTetap/create') ||  request()->is('karyawanTetap/edit/*') || request()->is('karyawanKontrak/edit/*') || request()->is('karyawanKontrak/create') || request()->is('karyawanTidakAktif')]) >
                 <a href="javascript:void(0);" class="menu-toggle">
                     <i class="material-icons">accessibility</i>
                     <span>Karyawan</span>
@@ -50,9 +53,18 @@
                             <span>Karyawan Kontrak</span>
                         </a>
                     </li>
+                    <li @class(['active' => request()->is('karyawanTidakAktif')])>
+                        <a href="{{route('karyawanTidakAktif')}}" >
+                            <span>Karyawan Tidak Aktif</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
+            @endcan
 
+            @can('absensi')
+                
+            
             <li @class(['active' => request()->is('import') || request()->is('kehadiran') || request()->is('importlembur') ]) >
                 <a href="javascript:void(0);" class="menu-toggle">
                     <i class="material-icons">view_list</i>
@@ -76,7 +88,7 @@
                     </li>
                 </ul>
             </li>
-           
+            @endcan
             
             <!-- <li @class(['active' => request()->is('import')]) >
                 <a href="{{route('import')}}">
@@ -84,41 +96,56 @@
                   <span>Import Excel</span>
                 </a>
               </li> -->
+              @can('penggajian')
             <li @class(['active' => request()->is('gajiAll')]) >
                 <a href="{{route('gajiAll')}}">
                     <i class="material-icons">attach_money</i>
                     <span>Penggajian</span>
                 </a>
             </li>
+            @endcan
+            @can('pph')  
             <li @class(['active' => request()->is('pph')]) >
                 <a href="{{route('pph')}}">
                     <i class="material-icons">attach_money</i>
                     <span>PPH</span>
                 </a>
             </li>
+            @endcan
+            @can('lembur')
+                
+            
               <li @class(['active' => request()->is('lemburAll') || request()->is('lemburFilter')]) >
                 <a href="{{route('lemburAll')}}">
                     <i class="material-icons">monetization_on</i>
                     <span>Lembur</span>
                 </a>
             </li>
+            @endcan
+
+            @can('slip gaji')
               <li @class(['active' => request()->is('send')]) >
                 <a href="{{route('send')}}">
                     <i class="material-icons">poll</i>
                     <span>Slip Gaji</span>
                 </a>
             </li>
-            {{-- <li @class(['active' => request()->is('roles') || request()->is('permissions') || request()->is('users')]) >
+            @endcan
+
+            @can('user-management')
+                
+            
+            <li @class(['active' => request()->is('roles') || request()->is('permissions') || request()->is('users')]) >
                 <a href="javascript:void(0);" class="menu-toggle">
                     <i class="material-icons">accessibility</i>
                     <span>User Management</span>
                 </a>
                 <ul class="ml-menu">
-                    <li @class(['active' => request()->is('roles')]) >
+                    {{-- <li @class(['active' => request()->is('roles')]) >
                         <a href="{{route('roles')}}" >
                             <span>Roles</span>
                         </a>
-                    </li>
+                    </li> --}}
                     <li @class(['active' => request()->is('permissions')])>
                         <a href="{{route('permissions')}}" >
                             <span>Permissions</span>
@@ -130,7 +157,8 @@
                         </a>
                     </li>
                 </ul>
-            </li> --}}
+            </li>
+            @endcan
 {{-- 
             <li @class(['active' => request()->is('roles') || request()->is('permissions') || request()->is('users')]) >
                 <a href="javascript:void(0);" class="menu-toggle">

@@ -392,6 +392,7 @@ class LemburController extends Controller
             # code...
             foreach ($lemburAbsen as $key => $value) {
                 $pegawai = Pegawai::where('kode_absen', $value->kode_absen)->first();
+                // dd($value->kode_absen);
                 if ($pegawai->status_pegawai ==  1) {
                     $dataLembur[] = HitungLembur::hitungLemburTetap($value->kode_absen);
                 } else {
@@ -502,10 +503,10 @@ class LemburController extends Controller
 
             // dd($dataLembur);
             Session::put('success', 'Sukses');
-            Session::forget('error');
+            Session::forget('success');
             return view('lembur.index', compact('dataLembur', 'totals', 'rudianto', 'total_tanggal', 'lemburRudianto', 'grand_totals'))->with('success', 'Sukses!');
         } else {
-            // dd(session('error'));
+            // dd('salah');
             $dataLembur[] = [];
             $totals = 0;
             $rudianto = [];
@@ -513,6 +514,7 @@ class LemburController extends Controller
             $lemburRudianto = [];
             $grand_totals = 0;
             Session::put('error', 'data tidak ada');
+            Session::forget('error');
             // dd(Session::get('error'));
             return view('lembur.index', compact('dataLembur', 'totals', 'rudianto', 'total_tanggal', 'lemburRudianto', 'grand_totals'))->with('error', 'Data Tidak ada');
         }

@@ -4,7 +4,7 @@
     <div class="container-fluid">
         <div class="block-header">
             <h2>
-                DATA KARYAWAN TETAP
+                DATA KARYAWAN TIDAK AKTIF
                 {{-- <small>Taken from <a href="https://datatables.net/" target="_blank">datatables.net</a></small> --}}
             </h2>
         </div>
@@ -14,9 +14,9 @@
                 <div class="card">
                     <br>
                     <div class="row">
-                        <div class="col-md-5">
+                        {{-- <div class="col-md-5">
                             <a style="margin-left: 7.5%" title="TAMBAH KARYAWAN" href="{{route('createkaryawantetap')}}" name="submit" class="btn btn-success waves-effect"><i class="material-icons">add</i><span>TAMBAH DATA</span></a>
-                        </div>
+                        </div> --}}
                         {{-- <form id="form_validation" method="post" action="">
                             <div class="col-sm-2">
                                 <div class="form-group form-float">

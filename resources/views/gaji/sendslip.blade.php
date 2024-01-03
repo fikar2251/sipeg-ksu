@@ -13,14 +13,6 @@
                                 enctype="multipart/form-data">
                                 @csrf
                                 <div class="form-group">
-                                    {{-- <div class="col-sm-4">
-                                        <label for="exampleFormControlFile1">DATA KEHADIRAN KARYAWAN LEMBUR</label>
-                                        <input required name="excel" type="file" class="form-control-file"
-                                            id="exampleFormControlFile1">
-                                        <label style="font-size: 12px; color:red;"><span style="color:red">*</span>Hanya bisa menggunakan file excel(.xls)</label>
-
-                                    </div> --}}
-
                                     <div class="col-sm-3">
                                         <p>
                                             <b>Pilih Bulan</b>
@@ -61,12 +53,12 @@
                                         <label class="form-label">Pilih Tahun</label>
                                         <div class="form-group">
                                             <div class="form-line">
-                                                <input autocomplete="off" type="text" id="periodeakhir"
-                                                    name="tahun" class="form-control datepickermaster2"
-                                                    value="<?php if (isset($_POST['cari'])) {
+                                                <input autocomplete="off" type="text" id="periodeakhir" name="tahun"
+                                                    class="form-control datepickermaster2" value="<?php if (isset($_POST['cari'])) {
                                                         echo $_POST['periodeakhir'];
-                                                    } ?>" required />
-                                                
+                                                    } ?>"
+                                                    required />
+
                                             </div>
                                         </div>
                                     </div>
@@ -78,20 +70,14 @@
                                             <option value="">Pilih Karyawan</option>
                                             <option value="all">Semua Karyawan</option>
                                             @foreach ($pegawai as $item)
-                                            <option value='{{$item->nip_pegawai}}'>{{$item->nama}}</option>
+                                                <option value='{{ $item->nip_pegawai }}'>{{ $item->nama }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="col-sm-2">
-                                        <button type="submit" name="upload" value="Submit"
-                                            class="btn btn-lg btn-success" style="margin-top: 20px">Send</button>
+                                        <button type="submit" name="upload" value="Submit" class="btn btn-lg btn-success"
+                                            style="margin-top: 20px">Send</button>
                                     </div>
-                                    {{-- <div class="col-sm-4">
-                          <button class="btn btn-warning">
-                          <a href="{{asset('public/Template_Data_Lembur.xlsx')}}" download>Download Template</a>
-                          </button>
-                          </div>
-                                </div> --}}
                             </form>
 
 
@@ -104,14 +90,19 @@
     </section>
 @endsection
 @push('custom-scripts')
-<!-- jQuery -->
-{{-- <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> --}}
-{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
-{{-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> --}}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker.min.css" integrity="sha512-34s5cpvaNG3BknEWSuOncX28vz97bRI59UnVtEEpFX536A7BtZSJHsDyFoCl8S7Dt2TPzcrCEoHBGeM4SUBDBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js" integrity="sha512-LsnSViqQyaXpD4mBBdRYeP6sRwJiJveh2ZIbW41EBrNmKxgr/LFZIiWT6yr+nycvhvauz8c2nYMhrP80YhG7Cw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- jQuery -->
+    {{-- <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> --}}
+    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
+    {{-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> --}}
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker.min.css"
+        integrity="sha512-34s5cpvaNG3BknEWSuOncX28vz97bRI59UnVtEEpFX536A7BtZSJHsDyFoCl8S7Dt2TPzcrCEoHBGeM4SUBDBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"
+        integrity="sha512-LsnSViqQyaXpD4mBBdRYeP6sRwJiJveh2ZIbW41EBrNmKxgr/LFZIiWT6yr+nycvhvauz8c2nYMhrP80YhG7Cw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
             $(document).on('click', '.editbtn', function() {
@@ -126,10 +117,10 @@
 
         $(".datepickermaster2").datepicker({
             format: 'yyyy',
-               viewMode: "years",
-               minViewMode: "years"
-            });
-            $(".pegawai").select2();
+            viewMode: "years",
+            minViewMode: "years"
+        });
+        $(".pegawai").select2();
     </script>
 
     {{-- <script>

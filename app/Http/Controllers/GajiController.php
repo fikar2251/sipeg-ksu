@@ -307,7 +307,18 @@ class GajiController extends Controller
     {
         $dataGaji = Gaji::select('gaji.*', 'pegawai.*', 'jabatan.nama as nama_jabatan')
             ->join('pegawai', 'pegawai.nip_pegawai', '=', 'gaji.nik_pegawai')
-            ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')->get();
+            ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
+            ->when($request->tahun, function ($query) use ($request) {
+                $query->where('tahun', $request->tahun);
+            })
+            ->when($request->bulan, function ($query) use ($request) {
+                $query->where('bulan', $request->bulan);
+            })
+            ->when($request->bulan && $request->tahun, function ($query) use ($request) {
+                $query->where('bulan', $request->bulan);
+                $query->where('tahun', $request->tahun);
+            })
+            ->get();
         // dd($dataGaji);
         if (!$dataGaji->isEmpty()) {
             // dd('true');
@@ -412,6 +423,8 @@ class GajiController extends Controller
 
                 $dataPph[] = [
                     'nama' => $values->nama,
+                    'bulan' => $values->bulan,
+                    'tahun' => $values->tahun,
                     'npwp' => $values->npwp,
                     'status' => $values->ptkp,
                     'gaji_perbulan' => $gaji_perbulan,
@@ -437,6 +450,97 @@ class GajiController extends Controller
             $dataPph = [];
         }
 
-        return DataTables::of($dataPph)->make(true);
+        return DataTables::of($dataPph)
+            ->editColumn('bulan', function ($data) {
+                $namaBulan = date('F', mktime(0, 0, 0, $data['bulan'], 1));
+                return $namaBulan;
+            })
+            ->editColumn('gaji_perbulan', function ($data) {
+
+
+                return 'Rp ' . number_format($data['gaji_perbulan'], 0, ',', '.');
+            })
+            ->editColumn('tunjangan_bpjs_ket', function ($data) {
+
+
+                return 'Rp ' . number_format($data['tunjangan_bpjs_ket'], 0, ',', '.');
+            })
+            ->editColumn('tunjangan_bpjs_kes', function ($data) {
+
+
+                return 'Rp ' . number_format($data['tunjangan_bpjs_kes'], 0, ',', '.');
+            })
+            ->editColumn('thr', function ($data) {
+
+
+                return 'Rp ' . number_format($data['thr'], 0, ',', '.');
+            })
+            ->editColumn('jumlah_gaji_bruto', function ($data) {
+
+
+                return 'Rp ' . number_format($data['jumlah_gaji_bruto'], 0, ',', '.');
+            })
+            ->editColumn('biaya_jabatan', function ($data) {
+
+
+                return 'Rp ' . number_format($data['biaya_jabatan'], 0, ',', '.');
+            })
+            ->editColumn('peng_bpjs_ket', function ($data) {
+
+
+                return 'Rp ' . number_format($data['peng_bpjs_ket'], 0, ',', '.');
+            })
+            ->editColumn('peng_bpjs_kes', function ($data) {
+
+
+                return 'Rp ' . number_format($data['peng_bpjs_kes'], 0, ',', '.');
+            })
+            ->editColumn('pengurangan', function ($data) {
+
+
+                return 'Rp ' . number_format($data['pengurangan'], 0, ',', '.');
+            })
+            ->editColumn('netto_gaji_setahun', function ($data) {
+
+
+                return 'Rp ' . number_format($data['netto_gaji_setahun'], 0, ',', '.');
+            })
+            ->editColumn('ptkp_setahun', function ($data) {
+
+
+                return 'Rp ' . number_format($data['ptkp_setahun'], 0, ',', '.');
+            })
+            ->editColumn('pkp_setahun', function ($data) {
+
+
+                return 'Rp ' . number_format($data['pkp_setahun'], 0, ',', '.');
+            })
+            ->editColumn('pkp_tanpa_thr', function ($data) {
+
+
+                return 'Rp ' . number_format($data['pkp_tanpa_thr'], 0, ',', '.');
+            })
+            ->editColumn('pph_tanpa_thr', function ($data) {
+
+
+                return 'Rp ' . number_format($data['pph_tanpa_thr'], 0, ',', '.');
+            })
+            ->editColumn('pph_dengan_thr', function ($data) {
+
+
+                return 'Rp ' . number_format($data['pph_dengan_thr'], 0, ',', '.');
+            })
+            ->editColumn('pph_thr', function ($data) {
+
+
+                return 'Rp ' . number_format($data['pph_thr'], 0, ',', '.');
+            })
+            ->editColumn('pph', function ($data) {
+
+
+                return 'Rp ' . number_format($data['pph'], 0, ',', '.');
+            })
+
+            ->make(true);
     }
 }

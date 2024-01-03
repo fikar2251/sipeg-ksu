@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Yajra\DataTables\Facades\DataTables;
 
 class ImportController extends Controller
 {
@@ -45,8 +46,11 @@ class ImportController extends Controller
         ]);
     }
 
-    public function kehadiran()
+    public function kehadiran(Request $request)
     {
+        // dd($request->get('bulan'), $request->get('tahun'));
+        $bulan = $request->get('bulan');
+        $tahun = $request->get('tahun');
         $pegawai = Pegawai::select('pegawai.*', 'gaji.*', 'status_pekerjaan.nama as nama_status', 'jabatan.nama as nama_jabatan')
             ->join('gaji', 'gaji.kode_absen', '=', 'pegawai.kode_absen')
             ->join('status_pekerjaan', 'status_pekerjaan.id', '=', 'pegawai.status_pegawai')
@@ -58,34 +62,39 @@ class ImportController extends Controller
             ->join('gaji', 'gaji.kode_absen', '=', 'pegawai.kode_absen')
             ->join('status_pekerjaan', 'status_pekerjaan.id', '=', 'pegawai.status_pegawai')
             ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
+            ->where('gaji_absen.bulan', $bulan)
+            ->where('gaji_absen.tahun', $tahun)
             ->get();
         $data2 = Gaji::select('pegawai.*', 'gaji.*', 'status_pekerjaan.nama as nama_status', 'jabatan.nama as nama_jabatan')
             // ->join('gaji_absen', 'gaji.kode_absen', '=', 'gaji_absen.kode_absen')
             ->join('pegawai', 'pegawai.kode_absen', '=', 'gaji.kode_absen')
             ->join('status_pekerjaan', 'status_pekerjaan.id', '=', 'pegawai.status_pegawai')
             ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
+            ->where('gaji.bulan', $bulan)
+            ->where('gaji.tahun', $tahun)
             ->get();
         // dd($data);
         // $data3 = [];
-        foreach ($data2 as $key => $datas) {
-            $tanggal = DetailAbsen::where('kode_absen', $datas->kode_absen)->get();
-            // foreach ($tanggal as $tgl) {
-            //     $tanggals[] = $tgl->tanggal;
-            // }
-            $data3[] = [
-                'nama' => $datas->nama,
-                'nip' => $datas->nip_pegawai,
-                'jabatan' => $datas->nama_jabatan,
-                'status' => $datas->nama_status,
-                'bulan' => $datas->bulan,
-                'tahun' => $datas->tahun,
-                'tanggal' => [],
-            ];
-        }
+        // foreach ($data2 as $key => $datas) {
+        //     $tanggal = DetailAbsen::where('kode_absen', $datas->kode_absen)->get();
+        //     // foreach ($tanggal as $tgl) {
+        //     //     $tanggals[] = $tgl->tanggal;
+        //     // }
+        //     $data3[] = [
+        //         'nama' => $datas->nama,
+        //         'nip' => $datas->nip_pegawai,
+        //         'jabatan' => $datas->nama_jabatan,
+        //         'status' => $datas->nama_status,
+        //         'bulan' => $datas->bulan,
+        //         'tahun' => $datas->tahun,
+        //         'tanggal' => [],
+        //     ];
+        // }
         $total = cal_days_in_month(CAL_GREGORIAN, date('m'), date('Y'));
         $totals = 31;
+        $total_tanggal = [26, 27, 28, 29, 30, 31];
         for ($i = 0; $i < $total; $i++) {
-            $total_tanggal[] = $i + 1;
+            array_push($total_tanggal, $i + 1);
         }
         // dd($total_tanggal);
         // $total_tanggal = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
@@ -209,30 +218,6 @@ class ImportController extends Controller
             $total = 0;
             $netto_kontrak = 0;
         }
-        // foreach ($dataTetap as $key => $data) {
-        //     $netto_gaji_tetap = HitungGaji::hitungTetap($data->nip_pegawai, $data->pinjaman, $data->adjustment, $data->supervisor);
-        // }
-        // foreach ($dataKontrak as $key => $datas) {
-        //     $total_gaji = HitungGaji::hitungKontrak($datas->nip_pegawai, $datas->adjustment);
-        //     $pph = HitungGaji::hitungPPH($datas->nip_pegawai, $datas->thr);
-        //     $netto_kontrak = [$total_gaji - $pph];
-        //     $total = $datas->gaji_gross_kontrak + $datas->adjustment;
-        //     $total_gaji = $total - $datas->pot_bjs_kes - $datas->pot_bpjs_ket - $datas->pot_jp;
-        // }
-        // var_dump($netto_kontrak);
-        // die;
-        // if ($data->status_pegawai == 1) {
-        //     # code...
-        //     $netto_gaji = HitungGaji::hitungTetap($id, $data->pinjaman, $data->adjustment);
-        //     $total_gaji = $data->uang_makan + $data->uang_transport + $data->gaji_pokok + $data->adjustment;
-        //     $pph = 0;
-        // } else {
-        //     $total_gaji = HitungGaji::hitungKontrak($id, $data->adjustment);
-        //     $pph = HitungGaji::hitungPPH($id, $data->thr);
-        //     $netto_gaji = $total_gaji - $pph;
-        //     $total = $data->gaji_gross_kontrak + $data->adjustment;
-        //     $total_gaji = $total - $data->pot_bjs_kes - $data->pot_bpjs_ket - $data->pot_jp;
-        // }
         return view('gaji.gajiAll', [
             // 'gaji' => $data,
             'netto_tetap' => $netto_gaji_tetap,
@@ -243,6 +228,276 @@ class ImportController extends Controller
             'data_kontrak' => $dataKontrak
         ]);
     }
+
+    public function dataGajiTetap(Request $request)
+    {
+        // dd($request->all());
+        $dataTetap = Gaji::select('gaji.*', 'pegawai.*', 'jabatan.nama as nama_jabatan')
+            ->join('pegawai', 'pegawai.nip_pegawai', '=', 'gaji.nik_pegawai')
+            ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
+            // ->leftJoin('pinjaman', 'pinjaman.nip_pegawai', '=', 'gaji.nik_pegawai')
+            ->where('pegawai.status_pegawai', 1)
+            ->when($request->tahun, function ($query) use ($request) {
+                $query->where('tahun', $request->tahun);
+            })
+            ->when($request->bulan, function ($query) use ($request) {
+                $query->where('bulan', $request->bulan);
+            })
+            ->when($request->bulan && $request->tahun, function ($query) use ($request) {
+                $query->where('bulan', $request->bulan);
+                $query->where('tahun', $request->tahun);
+            })
+            ->get();
+
+        $countTetap = count($dataTetap);
+
+        if ($countTetap > 0) {
+            foreach ($dataTetap as $key => $data) {
+                $netto_gaji_tetap = HitungGaji::hitungTetap($data->nip_pegawai, $data->pinjaman, $data->adjustment, $data->supervisor, $data->bulan);
+            }
+        } else {
+            $netto_gaji_tetap = 0;
+        }
+
+        return DataTables::of($dataTetap)
+            ->addColumn('netto_gaji', function ($data) {
+                $netto_gaji_tetap = HitungGaji::hitungTetap($data->nip_pegawai, $data->pinjaman, $data->adjustment, $data->supervisor, $data->bulan);
+                return 'Rp ' . number_format($netto_gaji_tetap, 0, ',', '.');
+            })
+            ->addColumn('pinjam', function ($data) {
+                if ($data->pinjaman === $data->sisa_pinjaman) {
+                    return 'Rp ' . number_format(0, 0, ',', '.');
+                } else {
+                    return 'Rp ' . number_format($data->nominal_pinjaman, 0, ',', '.');
+                }
+            })
+            ->addColumn('namas', function ($data) {
+                $href = route('detailGaji', $data->nip_pegawai . '_' . $data->bulan);
+
+                $nama = '<a target="_blank" href="' . $href . '">' . $data->nama . '</a>';
+                return $nama;
+            })
+            ->addColumn('gajiGross', function ($data) {
+
+
+                $gajiGross =   $data->data_pokok + $data->uang_makan + $data->uang_transport;
+                return 'Rp ' . number_format($gajiGross, 0, ',', '.');
+            })
+            ->addColumn('totalGaji', function ($data) {
+
+
+                $totalGaji =  $data->uang_makan + $data->uang_transport + $data->gaji_pokok + $data->adjustment;
+                return 'Rp ' . number_format($totalGaji, 0, ',', '.');
+            })
+            ->editColumn('bulan', function ($data) {
+
+
+                $namaBulan = date('F', mktime(0, 0, 0, $data->bulan, 1));
+                return $namaBulan;
+            })
+            ->editColumn('gaji_pokok', function ($data) {
+
+
+                return 'Rp ' . number_format($data->gaji_pokok, 0, ',', '.');
+            })
+            ->editColumn('uang_makan', function ($data) {
+
+
+                return 'Rp ' . number_format($data->uang_makan, 0, ',', '.');
+            })
+            ->editColumn('uang_transport', function ($data) {
+
+
+                return 'Rp ' . number_format($data->uang_transport, 0, ',', '.');
+            })
+            ->editColumn('supervisor', function ($data) {
+
+
+                return 'Rp ' . number_format($data->supervisor, 0, ',', '.');
+            })
+            ->editColumn('adjusment', function ($data) {
+
+
+                return 'Rp ' . number_format($data->adjusment, 0, ',', '.');
+            })
+            ->editColumn('premi_bpjs_ket', function ($data) {
+
+
+                return 'Rp ' . number_format($data->premi_bpjs_ket, 0, ',', '.');
+            })
+            ->editColumn('premi_bpjs_kes', function ($data) {
+
+
+                return 'Rp ' . number_format($data->premi_bpjs_kes, 0, ',', '.');
+            })
+            ->editColumn('premi_jp', function ($data) {
+
+
+                return 'Rp ' . number_format($data->premi_jp, 0, ',', '.');
+            })
+            ->editColumn('pot_bpjs_ket', function ($data) {
+
+
+                return 'Rp ' . number_format($data->pot_bpjs_ket, 0, ',', '.');
+            })
+            ->editColumn('pot_bpjs_kes', function ($data) {
+
+
+                return 'Rp ' . number_format($data->pot_bpjs_kes, 0, ',', '.');
+            })
+            ->editColumn('pot_jp', function ($data) {
+
+
+                return 'Rp ' . number_format($data->pot_jp, 0, ',', '.');
+            })
+            ->editColumn('sisa_pinjaman', function ($data) {
+
+
+                return 'Rp ' . number_format($data->sisa_pinjaman, 0, ',', '.');
+            })
+            ->rawColumns(['netto_gaji', 'pinjam', 'namas', 'gajiGross', 'totalGaji'])
+            ->make(true);
+    }
+
+    public function dataGajiKontrak(Request $request)
+    {
+        $dataKontrak = Gaji::select('gaji.*', 'pegawai.*', 'jabatan.nama as nama_jabatan')
+            ->join('pegawai', 'pegawai.nip_pegawai', '=', 'gaji.nik_pegawai')
+            ->join('jabatan', 'jabatan.id', '=', 'pegawai.jabatan')
+            ->where('pegawai.status_pegawai', 2)
+            ->when($request->tahun, function ($query) use ($request) {
+                $query->where('tahun', $request->tahun);
+            })
+            ->when($request->bulan, function ($query) use ($request) {
+                $query->where('bulan', $request->bulan);
+            })
+            ->when($request->bulan && $request->tahun, function ($query) use ($request) {
+                $query->where('bulan', $request->bulan);
+                $query->where('tahun', $request->tahun);
+            })
+            ->get();
+
+        $countKontrak = count($dataKontrak);
+
+        if ($countKontrak > 0) {
+            foreach ($dataKontrak as $key => $datas) {
+                // dd($dataKontrak);
+                $total_gaji = HitungGaji::hitungKontrak($datas->nip_pegawai, $datas->adjustment);
+                $pph = HitungGaji::hitungPPH($datas->nip_pegawai, $datas->thr);
+                $netto_kontrak = [$total_gaji - $pph];
+                $total = $datas->gaji_gross_kontrak + $datas->adjustment;
+                $total_gaji = $total - $datas->pot_bjs_kes - $datas->pot_bpjs_ket - $datas->pot_jp;
+            }
+        } else {
+            $total_gaji = 0;
+            $pph = 0;
+            $total = 0;
+            $netto_kontrak = 0;
+        }
+
+
+        return DataTables::of($dataKontrak)
+            ->addColumn('netto_gaji', function ($data) {
+                $total_gaji = HitungGaji::hitungKontrak($data->nip_pegawai, $data->adjustment);
+                $pph = HitungGaji::hitungPPH($data->nip_pegawai, $data->thr);
+                $netto_kontrak = $total_gaji - $pph;
+                return 'Rp ' . number_format($netto_kontrak, 0, ',', '.');
+            })
+            ->addColumn('pinjam', function ($data) {
+                if ($data->pinjaman === $data->sisa_pinjaman) {
+                    return 'Rp ' . number_format(0, 0, ',', '.');
+                } else {
+                    return 'Rp ' . number_format($data->nominal_pinjaman, 0, ',', '.');
+                }
+            })
+            ->addColumn('namas', function ($data) {
+                $href = route('detailGaji', $data->nip_pegawai . '_' . $data->bulan);
+
+                $nama = '<a target="_blank" href="' . $href . '">' . $data->nama . '</a>';
+                return $nama;
+            })
+            ->addColumn('pph', function ($data) {
+
+
+                $pph = HitungGaji::hitungPPH($data->nip_pegawai, $data->thr);
+                return 'Rp ' . number_format($pph, 0, ',', '.');
+            })
+            ->addColumn('totalGaji', function ($data) {
+
+
+                $totalGaji =  $data->gaji_gross_kontrak + $data->adjustment -  $data->pot_bjs_kes - $data->pot_bpjs_ket - $data->pot_jp;
+                return 'Rp ' . number_format($totalGaji, 0, ',', '.');
+            })
+            ->editColumn('bulan', function ($data) {
+
+
+                $namaBulan = date('F', mktime(0, 0, 0, $data->bulan, 1));
+                return $namaBulan;
+            })
+            ->editColumn('gaji_pokok', function ($data) {
+
+
+                return 'Rp ' . number_format($data->gaji_pokok, 0, ',', '.');
+            })
+            ->editColumn('uang_makan', function ($data) {
+
+
+                return 'Rp ' . number_format($data->uang_makan, 0, ',', '.');
+            })
+            ->editColumn('uang_transport', function ($data) {
+
+
+                return 'Rp ' . number_format($data->uang_transport, 0, ',', '.');
+            })
+            ->editColumn('supervisor', function ($data) {
+
+
+                return 'Rp ' . number_format($data->supervisor, 0, ',', '.');
+            })
+            ->editColumn('adjusment', function ($data) {
+
+
+                return 'Rp ' . number_format($data->adjusment, 0, ',', '.');
+            })
+            ->editColumn('premi_bpjs_ket', function ($data) {
+
+
+                return 'Rp ' . number_format($data->premi_bpjs_ket, 0, ',', '.');
+            })
+            ->editColumn('premi_bpjs_kes', function ($data) {
+
+
+                return 'Rp ' . number_format($data->premi_bpjs_kes, 0, ',', '.');
+            })
+            ->editColumn('premi_jp', function ($data) {
+
+
+                return 'Rp ' . number_format($data->premi_jp, 0, ',', '.');
+            })
+            ->editColumn('pot_bpjs_ket', function ($data) {
+
+
+                return 'Rp ' . number_format($data->pot_bpjs_ket, 0, ',', '.');
+            })
+            ->editColumn('pot_bpjs_kes', function ($data) {
+
+
+                return 'Rp ' . number_format($data->pot_bpjs_kes, 0, ',', '.');
+            })
+            ->editColumn('pot_jp', function ($data) {
+
+
+                return 'Rp ' . number_format($data->pot_jp, 0, ',', '.');
+            })
+            ->editColumn('sisa_pinjaman', function ($data) {
+
+
+                return 'Rp ' . number_format($data->sisa_pinjaman, 0, ',', '.');
+            })
+            ->rawColumns(['netto_gaji', 'pinjam', 'namas', 'gajiGross', 'totalGaji'])
+            ->make(true);
+    }
+
     public function detailGaji($id)
     {
         // dd($id);

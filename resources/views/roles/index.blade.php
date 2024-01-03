@@ -96,12 +96,13 @@
                                                     @endforeach
                                                 </td>
                                                 <td class="text-center" style="width: 20%">
-                                                    <a data-id="{{$item->id}}" class="editbtn" title="UBAH ROLE" data-target="#editModal" data-toggle="modal" href="#"><i class="material-icons"
-                                                            aria-hidden="true">edit</i></a>
+                                                    <a data-id="{{ $item->id }}" class="editbtn" title="UBAH ROLE"
+                                                        data-target="#editModal" data-toggle="modal" href="#"><i
+                                                            class="material-icons" aria-hidden="true">edit</i></a>
                                                     <a title="HAPUS ROLE" href="#" role="button" class="hapusRole"
                                                         data-id="" data-toggle="modal"><i class="material-icons"
                                                             aria-hidden="true">delete</i></a>
-                                                  
+
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -176,22 +177,15 @@
                             Roles</h4>
                     </div>
                     <div class="modal-body">
-                        <form method="POST"
-                            action="{{ route('update-permissions') }}">
+                        <form method="POST" action="{{ route('update-permissions') }}">
                             @csrf
                             <div class="row clearfix">
-                                <div
-                                    class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+                                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
                                     <div class="form-group">
                                         <div class="form-line">
-                                            <input type="text"
-                                                id="roleName"
-                                                class="form-control"
-                                                name="name">
-                                            <input type="hidden"
-                                                id="roleId"
-                                                class="form-control"
-                                                name="id" value="">
+                                            <input type="text" id="roleName" class="form-control" name="name">
+                                            <input type="hidden" id="roleId" class="form-control" name="id"
+                                                value="">
                                             {{-- <label class="form-label">Nama</label> --}}
                                         </div>
                                     </div>
@@ -227,41 +221,35 @@
                     </div>
                     <div class="modal-footer">
                         {{-- <button type="button" class="btn btn-success waves-effect"><i class="material-icons me-3">save</i>SIMPAN</button> --}}
-                        <button type="submit" name="submit"
-                            class="btn btn-success waves-effect"> <i
+                        <button type="submit" name="submit" class="btn btn-success waves-effect"> <i
                                 class="material-icons">save</i><span>SIMPAN</span></button>
                         {{-- <button type="button" name="submit" class="btn btn-success waves-effect"><i class="material-icons">add</i><span>TAMBAH ROLE</span></button> --}}
-                        <button type="button"
-                            class="btn btn-danger waves-effect"
-                            data-dismiss="modal"> <i
+                        <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal"> <i
                                 class="material-icons">close</i><span>TUTUP</span></button>
                     </div>
                     </form>
                 </div>
             </div>
         </div>
-</section 
+    </section>
 @endsection
 @push('custom-scripts')
     <script>
-        $(document).ready(function(){
-             $(document).on('click','.editbtn',function(){
-                {{-- alert('Please enter') --}}
-                 var book_id = $(this).attr('data-id');
-                 console.log(book_id);
-                //  alert(book_id)
+        $(document).ready(function() {
+            $(document).on('click', '.editbtn', function() {
+                var book_id = $(this).attr('data-id');
+                console.log(book_id);
                 $.ajax({
-                   type:"GET",
-                   url:"/roles/"+book_id,
-                   success:function(response){
-                    console.log(response);
-                      $('#roleId').val(response.id);
-                      $('#roleName').val(response.name);
-                   }
+                    type: "GET",
+                    url: "/roles/" + book_id,
+                    success: function(response) {
+                        console.log(response);
+                        $('#roleId').val(response.id);
+                        $('#roleName').val(response.name);
+                    }
                 });
-             });
-             
-          });
-    </script>
+            });
 
+        });
+    </script>
 @endpush

@@ -2,17 +2,17 @@
 @push('custom-css')
     <style>
         /* .rincian{
-                border: 1px solid black;
-              }
-              .rincian th, td{
-                border: 1px solid black;
-              } */
+                    border: 1px solid black;
+                  }
+                  .rincian th, td{
+                    border: 1px solid black;
+                  } */
     </style>
 @endpush
 @section('content')
-@php
-    use App\Helpers\HitungGaji;
-@endphp
+    @php
+        use App\Helpers\HitungGaji;
+    @endphp
     <section class="content">
         <div class="container-fluid">
             <div class="block-header">
@@ -26,121 +26,150 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
                         <div class="body">
-                            <form action=" {{route('lemburFilter')}} " method="GET">
+                            <form action=" {{ route('lemburFilter') }} " method="GET">
                                 @csrf
-                            <div class="row">
-                             <div class="col-sm-3">
-                            <div class="form-group form-float">
-                                <div class="form-line">
-                                    <input autocomplete="off" type="text" id="periodeawal" name="periodeawal" class="form-control datepickermaster2" value="<?php if(isset($_POST["cari"])){ echo $_POST["periodeawal"]; } ?>" required/>
-                                    <label class="form-label">Periode Awal</label>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <div class="form-group form-float">
+                                            <div class="form-line">
+                                                <input autocomplete="off" type="text" id="periodeawal" name="periodeawal"
+                                                    class="form-control datepickermaster2" value="<?php if (isset($_POST['cari'])) {
+                                                        echo $_GET['periodeawal'];
+                                                    } ?>"
+                                                    required />
+                                                <label class="form-label">Periode Awal</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 form-control-label"
+                                        style="width:50px;">
+                                        <label>S/D</label>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group form-float">
+                                            <div class="form-line">
+                                                <input autocomplete="off" type="text" id="periodeakhir"
+                                                    name="periodeakhir" class="form-control datepickermaster2"
+                                                    value="<?php if (isset($_POST['cari'])) {
+                                                        echo $_GET['periodeakhir'];
+                                                    } ?>" required />
+                                                <label class="form-label">Periode Akhir</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <button name="cari" type="submit" class="btn bg-green waves-effect">
+                                            <i class="material-icons">search</i>
+                                            <span>CARI</span>
+                                        </button>
+                                        <!-- <a href="{{ route('lemburAll') }}"  class="btn bg-green waves-effect">
+                                    <i class="material-icons">refresh</i>
+                                    <span>RESET</span></a> -->
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12 form-control-label" style="width:50px;">
-                            <label>S/D</label>
-                        </div>
-                        <div class="col-sm-3">
-                            <div class="form-group form-float">
-                                <div class="form-line">
-                                    <input autocomplete="off" type="text" id="periodeakhir" name="periodeakhir" class="form-control datepickermaster2" value="<?php if(isset($_POST["cari"])){ echo $_POST["periodeakhir"]; } ?>" required/>
-                                    <label class="form-label">Periode Akhir</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <button name="cari" type="submit" class="btn bg-green waves-effect">
-                                <i class="material-icons">search</i>
-                                <span>CARI</span>
-                            </button>
-                            <!-- <a href="{{route('lemburAll')}}"  class="btn bg-green waves-effect">
-                                <i class="material-icons">refresh</i>
-                                <span>RESET</span></a> -->
-                        </div>
-                            </div>
                             </form>
+
+                            @if (request()->is('lemburFilter'))
+                          <b>  Periode: &nbsp; @php
+                            echo $_GET['periodeawal'];
+                        @endphp &nbsp; &nbsp; s/d &nbsp; &nbsp; @php
+                                        echo $_GET['periodeakhir'];
+                                    @endphp </b>
+                            {{-- <div class="row">
+                                <div class="col-sm-2">
+                                    <h4>@php
+                                        echo $_GET['periodeawal'];
+                                    @endphp</h4>
+                                </div>
+                                <div class="col-sm-2">
+                                   S/D
+                                </div>
+                                <div class="col-sm-2">
+                                    <h4>@php
+                                        echo $_GET['periodeakhir'];
+                                    @endphp</h4>
+                                </div>
+                            </div> --}}
+                            
                            
-                            @if(request()->is('lemburFilter'))
-                            <div class="table-responsive">
-                                <table style="font-size: 12px"
-                                    class="table table-bordered table-striped table-hover">
-                                    <thead>
-                                        <tr>
-                                            {{-- <th rowspan="2">No</th> --}}
-                                            <th rowspan="2">NO</th>
-                                            <th rowspan="2">NAMA</th>
-                                            <th style="text-align: center" colspan="4">LEMBUR</th>
-                                            <th style="text-align: center" colspan="3">U. M & T (H. LIBUR)</th>
-                                            <th style="text-align: center" colspan="3">U. M (H. BIASA)</th>
-                                            {{-- <th style="text-align: center" colspan="3">U. KENEK</th> --}}
-                                            <th rowspan="2">TOTAL</th>
-                                        </tr>
-                                        <tr>
-                                            <th>JML</th>
-                                            <th>LMR/JAM</th>
-                                            <th>JML</th>
-                                            <th >PEMBULATAN</th>
-                                            <th>JML</th>
-                                            <th >U. M & T</th>
-                                            <th>TOTAL</th>
-                                            <th>JML</th>
-                                            <th>U. MKN</th>
-                                            <th>TOTAL</th>
-                                           
-                                            {{-- <th>JML</th>
+                                <div class="table-responsive">
+                                    <table style="font-size: 12px" class="table table-bordered table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                {{-- <th rowspan="2">No</th> --}}
+                                                <th rowspan="2">NO</th>
+                                                <th rowspan="2">NAMA</th>
+                                                <th style="text-align: center" colspan="4">LEMBUR</th>
+                                                <th style="text-align: center" colspan="3">U. M & T (H. LIBUR)</th>
+                                                <th style="text-align: center" colspan="3">U. M (H. BIASA)</th>
+                                                {{-- <th style="text-align: center" colspan="3">U. KENEK</th> --}}
+                                                <th rowspan="2">TOTAL</th>
+                                            </tr>
+                                            <tr>
+                                                <th>JML</th>
+                                                <th>LMR/JAM</th>
+                                                <th>JML</th>
+                                                <th>PEMBULATAN</th>
+                                                <th>JML</th>
+                                                <th>U. M & T</th>
+                                                <th>TOTAL</th>
+                                                <th>JML</th>
+                                                <th>U. MKN</th>
+                                                <th>TOTAL</th>
+
+                                                {{-- <th>JML</th>
                                             <th>KENEK</th>
                                             <th>TOTAL</th> --}}
-                                         
-                                            {{-- <th ></th>
-                                            <th ></th> --}}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @if(count($dataLembur) > 0)
-                                        @php
-                                            $no = 1;
-                                        @endphp
-                                       @foreach ($dataLembur as $item)
-                                       @foreach ($item as $items)             
-                                        <tr>
-                                            {{-- <td >{{$loop->iteration}}</td> --}}
-                                            <td>{{$no}}</td>
-                                            <td> {{$items['nama']}} </td>
-                                        <td>{{$items['jml_lembur']}}</td>
-                                            <td>@rupiah($items['upah_per_jam'])</td>
-                                            <td>@rupiah($items['upah'])</td>
-                                            <td>@rupiah($items['pembulatan_upah'])</td>
-                                            <td>{{$items['jml_uml']}}</td>
-                                            <td>@rupiah($items['umt'])</td>
-                                            <td>@rupiah($items['uml'])</td>
-                                            <td>{{$items['jml_umb']}}</td>
-                                            <td>@rupiah($items['um'])</td>
-                                            <td>@rupiah($items['umb'])</td>
-                                            <td>@rupiah($items['total'])</td>
-                                        </tr>
-                                        
-                                        @php
-                                          $no ++;  
-                                        @endphp
-                                        @endforeach
-                                        @endforeach
-                                        <tr>
-                                            <td style="text-align: right" colspan="12">Total</td>
-                                            <td>@rupiah($grand_totals)</td>
-                                        </tr>
-                                        @else
 
-                                        @endif
-                                       
-                                    </tbody>
-                                </table>
-                            </div>
-                            @if ($rudianto)
-                            <div class="row clearfix">
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="card">
-                                        <div class="body">
-                                            {{-- @if ($message = Session::get('success'))
+                                                {{-- <th ></th>
+                                            <th ></th> --}}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (count($dataLembur) > 0)
+                                                @php
+                                                    $no = 1;
+                                                @endphp
+                                                @foreach ($dataLembur as $item)
+                                                    @foreach ($item as $items)
+                                                        <tr>
+                                                            {{-- <td >{{$loop->iteration}}</td> --}}
+                                                            <td>{{ $no }}</td>
+                                                            <td> {{ $items['nama'] }} </td>
+                                                            <td>{{ $items['jml_lembur'] }}</td>
+                                                            <td>@rupiah($items['upah_per_jam'])</td>
+                                                            <td>@rupiah($items['upah'])</td>
+                                                            <td>@rupiah($items['pembulatan_upah'])</td>
+                                                            <td>{{ $items['jml_uml'] }}</td>
+                                                            <td>@rupiah($items['umt'])</td>
+                                                            <td>@rupiah($items['uml'])</td>
+                                                            <td>{{ $items['jml_umb'] }}</td>
+                                                            <td>@rupiah($items['um'])</td>
+                                                            <td>@rupiah($items['umb'])</td>
+                                                            <td>@rupiah($items['total'])</td>
+                                                        </tr>
+
+                                                        @php
+                                                            $no++;
+                                                        @endphp
+                                                    @endforeach
+                                                @endforeach
+                                                <tr>
+                                                    <td style="text-align: right" colspan="12">Total</td>
+                                                    <td>@rupiah($grand_totals)</td>
+                                                </tr>
+                                            @else
+                                            @endif
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                @if ($rudianto)
+                                    <div class="row clearfix">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            <div class="card">
+                                                <div class="body">
+                                                    {{-- @if ($message = Session::get('success'))
                                         <div class="alert bg-green alert-dismissible" role="alert">
                                             <button type="button" class="close" data-dismiss="alert"
                                                 aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -154,42 +183,43 @@
                                                 {{ $message }}
                                             </div>
                                             @endif --}}
-                                            <div class="table-responsive">
-                                                <table id="kehadiran" class="table table-bordered table-striped table-hover">
-                                                    <thead>
-                                                        <tr>
-                                                            {{-- <th rowspan="2">No</th> --}}
-                                                            {{-- <th rowspan="2">#</th> --}}
-                                                            <th rowspan="2">Nama Lengkap</th>
-                                                            <th rowspan="2">NIP</th>
-                                                            <th rowspan="2">Jabatan</th>
-                                                            <th rowspan="2">Status</th>
-                                                            {{-- <th>Bulan</th>
+                                                    <div class="table-responsive">
+                                                        <table id="kehadiran"
+                                                            class="table table-bordered table-striped table-hover">
+                                                            <thead>
+                                                                <tr>
+                                                                    {{-- <th rowspan="2">No</th> --}}
+                                                                    {{-- <th rowspan="2">#</th> --}}
+                                                                    <th rowspan="2">Nama Lengkap</th>
+                                                                    <th rowspan="2">NIP</th>
+                                                                    <th rowspan="2">Jabatan</th>
+                                                                    <th rowspan="2">Status</th>
+                                                                    {{-- <th>Bulan</th>
                                                             <th>Tahun</th> --}}
-                                                            <th style="text-align: center" colspan="31">Tanggal
-                
-                                                            </th>
-                
-                
-                
-                                                            {{-- <th>Status Kehadiran</th>
+                                                                    <th style="text-align: center" colspan="31">Tanggal
+
+                                                                    </th>
+
+
+
+                                                                    {{-- <th>Status Kehadiran</th>
                                                             <th>Aksi</th> --}}
-                                                        </tr>
-                                                        <tr>
-                                                            @php
-                                                                // $i = 1;
-                                                            @endphp
-                                                            @for ($i = 0; $i < count($total_tanggal); $i++)
-                                                                <th> {{ $i + 1 }} </th>
-                                                            @endfor
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                
-                                                        {{-- @foreach ($rudianto as $index => $data1) --}}
-                                                            <tr>
-                                                                {{-- <td>{{ $loop->iteration }}</td> --}}
-                                                                {{-- <td>
+                                                                </tr>
+                                                                <tr>
+                                                                    @php
+                                                                        // $i = 1;
+                                                                    @endphp
+                                                                    @for ($i = 0; $i < count($total_tanggal); $i++)
+                                                                        <th> {{ $i + 1 }} </th>
+                                                                    @endfor
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+
+                                                                {{-- @foreach ($rudianto as $index => $data1) --}}
+                                                                <tr>
+                                                                    {{-- <td>{{ $loop->iteration }}</td> --}}
+                                                                    {{-- <td>
                                                                     <a data-id="{{ $rudianto->nip_pegawai }}"
                                                                         data-adjustment="{{ $rudianto->adjustment }}"
                                                                         data-pinjaman="{{ $rudianto->pinjaman }}"
@@ -204,12 +234,12 @@
                                                                         href="{{ route('detailGaji', $rudianto->nip_pegawai . '_' . $rudianto->bulan) }}"><i
                                                                             class="material-icons" aria-hidden="true">search</i></a>
                                                                 </td> --}}
-                                                                <td>{{ $rudianto->nama }}</td>
-                                                                <td>{{ $rudianto->nip_pegawai }}</td>
-                                                                <td>{{ $rudianto->nama_jabatan }}</td>
-                                                                <td>Pegawai {{ $rudianto->nama_status }}</td>
-                                                                {{-- @else --}}
-                                                                {{-- <td>
+                                                                    <td>{{ $rudianto->nama }}</td>
+                                                                    <td>{{ $rudianto->nip_pegawai }}</td>
+                                                                    <td>{{ $rudianto->nama_jabatan }}</td>
+                                                                    <td>Pegawai {{ $rudianto->nama_status }}</td>
+                                                                    {{-- @else --}}
+                                                                    {{-- <td>
                                                                     @if ($rudianto->bulan == 01)
                                                                         Januari
                                                                     @elseif($rudianto->bulan == 02)
@@ -237,64 +267,68 @@
                                                                     @endif
                                                                 </td>
                                                                 <td>{{ $rudianto->tahun }}</td> --}}
-                                                                @php
-                                                                    $tgl = $lemburRudianto->where('kode_absen', $rudianto->kode_absen);
-                                                                    // dd($tgl);
-                                                                @endphp
-                                                                @foreach ($total_tanggal as $item)
-                                                                    <td>
-                                                                        @foreach ($tgl as $tg)
-                                                                            @if ($item == $tg->tanggal)
-                                                                                @if ($tg->masuk == '00:00:00')
-                                                                                    @if ($tg->status_pegawai == 1)
-                                                                                        <a href="#" id="absen"
-                                                                                            data-target="#absen" data-toggle="modal"
+                                                                    @php
+                                                                        $tgl = $lemburRudianto->where('kode_absen', $rudianto->kode_absen);
+                                                                        // dd($tgl);
+                                                                    @endphp
+                                                                    @foreach ($total_tanggal as $item)
+                                                                        <td>
+                                                                            @foreach ($tgl as $tg)
+                                                                                @if ($item == $tg->tanggal)
+                                                                                    @if ($tg->masuk == '00:00:00')
+                                                                                        @if ($tg->status_pegawai == 1)
+                                                                                            <a href="#" id="absen"
+                                                                                                data-target="#absen"
+                                                                                                data-toggle="modal"
+                                                                                                data-id="{{ $tg->kode_absen }}"
+                                                                                                data-tanggal="{{ $tg->tanggal }}-{{ $tg->bulan }}-{{ $tg->tahun }}">
+                                                                                                @if ($tg->keterangan == 'C')
+                                                                                                    <span
+                                                                                                        class="badge bg-orange">{{ $tg->keterangan }}</span><br>
+                                                                                                @elseif($tg->keterangan == 'SID')
+                                                                                                    <span
+                                                                                                        class="badge bg-orange">{{ $tg->keterangan }}</span><br>
+                                                                                                @elseif($tg->keterangan == 'IK')
+                                                                                                    <span
+                                                                                                        class="badge bg-orange">{{ $tg->keterangan }}</span><br>
+                                                                                                @elseif($tg->keterangan == 'IPG')
+                                                                                                    <span
+                                                                                                        class="badge bg-orange">{{ $tg->keterangan }}</span><br>
+                                                                                                @else
+                                                                                                    <span
+                                                                                                        class="badge bg-red">A</span><br>
+                                                                                                @endif
+                                                                                            </a>
+                                                                                        @else
+                                                                                            <span
+                                                                                                class="badge bg-red">A</span><br>
+                                                                                        @endif
+                                                                                        {{-- <span id="jam_masuk">{{$tg->masuk}}</span> --}}
+                                                                                    @else
+                                                                                        <a href="#" class="absens"
+                                                                                            data-target="#absen"
+                                                                                            data-toggle="modal"
                                                                                             data-id="{{ $tg->kode_absen }}"
-                                                                                            data-tanggal="{{ $tg->tanggal }}-{{ $tg->bulan }}-{{ $tg->tahun }}">
-                                                                                            @if ($tg->keterangan == 'C')
+                                                                                            data-tanggal="{{ $tg->tanggal }}-{{ $tg->bulan_lembur }}-{{ $tg->tahun }}">
+                                                                                            @if ($tg->keterangan == 1)
                                                                                                 <span
-                                                                                                    class="badge bg-orange">{{ $tg->keterangan }}</span><br>
-                                                                                            @elseif($tg->keterangan == 'SID')
+                                                                                                    class="badge bg-green">M</span>
+                                                                                            @elseif($tg->keterangan == 2)
                                                                                                 <span
-                                                                                                    class="badge bg-orange">{{ $tg->keterangan }}</span><br>
-                                                                                            @elseif($tg->keterangan == 'IK')
-                                                                                                <span
-                                                                                                    class="badge bg-orange">{{ $tg->keterangan }}</span><br>
-                                                                                            @elseif($tg->keterangan == 'IPG')
-                                                                                                <span
-                                                                                                    class="badge bg-orange">{{ $tg->keterangan }}</span><br>
+                                                                                                    class="badge bg-green">P</span>
                                                                                             @else
-                                                                                                <span class="badge bg-red">A</span><br>
+                                                                                                <span
+                                                                                                    class="badge bg-green">H</span>
                                                                                             @endif
                                                                                         </a>
-                                                                                    @else
-                                                                                        <span class="badge bg-red">A</span><br>
                                                                                     @endif
-                                                                                    {{-- <span id="jam_masuk">{{$tg->masuk}}</span> --}}
-                                                                                @else
-                                                                                <a href="#"
-                                                                                class="absens"
-                                                                                            data-target="#absen" data-toggle="modal"
-                                                                                            data-id="{{ $tg->kode_absen }}"
-                                                                                            data-tanggal="{{ $tg->tanggal }}-{{ $tg->bulan_lembur }}-{{ $tg->tahun }}"
-                                                                                >
-                                                                                @if ($tg->keterangan == 1)
-                                                                                <span class="badge bg-green">M</span>
-                                                                                @elseif($tg->keterangan == 2)
-                                                                                <span class="badge bg-green">P</span>
-                                                                                @else   
-                                                                                <span class="badge bg-green">H</span>
                                                                                 @endif
-                                                                                </a>
-                                                                                   
-                                                                                @endif
-                                                                            @endif
-                                                                        @endforeach
-                                                                @endforeach
-                                                                </td>
-                
-                
-                                                                {{-- <td>
+                                                                            @endforeach
+                                                                    @endforeach
+                                                                    </td>
+
+
+                                                                    {{-- <td>
                                                                     @if ($data1->masuk == '00:00:00')
                                                                         <span class="badge bg-red">Tidak hadir</span> <br>
                                                                         (Izin)
@@ -318,23 +352,22 @@
                                                                         href="{{ route('detailGaji', $data1->nip_pegawai . '_' . $data1->bulan) }}"><i
                                                                             class="material-icons" aria-hidden="true">search</i></a>
                                                                 </td> --}}
-                                                            </tr>
-                                                            {{-- @php
+                                                                </tr>
+                                                                {{-- @php
                                                                 $no++;
                                                                 $previousName = $data1->nama;
                                                             @endphp --}}
-                                                        {{-- @endforeach --}}
-                                                    </tbody>
-                                                </table>
+                                                                {{-- @endforeach --}}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                                
+                                @endif
                             @endif
-                            @endif
-                            
+
                         </div>
                     </div>
                 </div>
@@ -377,16 +410,15 @@
                                     {{-- <label style="margin-top: 20px;" for="adjusment">Awal</label> --}}
                                     {{-- <div class="form-group">
                                         <div class="form-line"> --}}
-                                            <input hidden type="hidden" class="form-control" name="awal" id="awal"
-                                                readonly>
-                                        {{-- </div>
+                                    <input hidden type="hidden" class="form-control" name="awal" id="awal"
+                                        readonly>
+                                    {{-- </div>
                                     </div> --}}
                                     {{-- <label style="margin-top: 20px;" for="adjusment">Akhir</label> --}}
                                     {{-- <div class="form-group">
                                         <div class="form-line"> --}}
-                                            <input  type="hidden" class="form-control" name="akhir" id="akhir"
-                                                readonly>
-                                        {{-- </div>
+                                    <input type="hidden" class="form-control" name="akhir" id="akhir" readonly>
+                                    {{-- </div>
                                     </div> --}}
                                     <!-- </div> -->
                                 </div>
@@ -422,31 +454,30 @@
     {{-- <link href="../../plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet"> --}}
 @endsection
 @push('custom-scripts')
-<script>
+    <script>
         $('.datepickermaster2').datetimepicker({
             dayOfWeekStart: 1,
             lang: 'en',
             timepicker: false,
             disabledDates: ['1986/01/08', '1986/01/09', '1986/01/10'],
-            
+
             format: 'd-m-Y'
         });
-    
-    
-        $(document).on('click', '.absens', function() {
-                {{-- alert('Please enter') --}}
-                var nip = $(this).attr('data-id');
-                var tanggal = $(this).attr('data-tanggal');
-                var periodeAwal = $('#periodeawal').val();
-                var periodeAkhir = $('#periodeakhir').val();
-                // var tanggal = $(this).attr('data-tanggal');
 
-                console.log(tanggal);
-                $('#kode_absen').val(nip);
-                $('#tanggal').val(tanggal);
-                $('#awal').val(periodeAwal);
-                $('#akhir').val(periodeAkhir);
-            });
-    
+
+        $(document).on('click', '.absens', function() {
+            {{-- alert('Please enter') --}}
+            var nip = $(this).attr('data-id');
+            var tanggal = $(this).attr('data-tanggal');
+            var periodeAwal = $('#periodeawal').val();
+            var periodeAkhir = $('#periodeakhir').val();
+            // var tanggal = $(this).attr('data-tanggal');
+
+            console.log(tanggal);
+            $('#kode_absen').val(nip);
+            $('#tanggal').val(tanggal);
+            $('#awal').val(periodeAwal);
+            $('#akhir').val(periodeAkhir);
+        });
     </script>
 @endpush
