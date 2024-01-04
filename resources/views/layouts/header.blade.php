@@ -1,6 +1,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>SIPEG KSU</title>
 <!-- Favicon-->
 <link rel="icon" href="{{asset('asset/favicon.png')}}" type="image/x-icon">
@@ -19,6 +20,9 @@
 <!-- Animation Css -->
 <link href="{{asset('asset/plugins/animate-css/animate.css')}}" rel="stylesheet" />
 
+<!-- Sweetalert Css -->
+<link href="{{asset('asset/plugins/sweetalert/sweetalert.css')}}" rel="stylesheet" />
+
 <!-- Multi Select Css -->
 <link href="{{asset('asset/plugins/multi-select/css/multi-select.css')}}" rel="stylesheet">
 
@@ -32,7 +36,7 @@
 <!-- Morris Chart Css-->
 <link href="{{asset('asset/plugins/morrisjs/morris.css')}}" rel="stylesheet" />
 
-<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
 <!-- Custom Css -->
 <link href="{{asset('asset/css/style.css')}}" rel="stylesheet">
@@ -41,5 +45,9 @@
 
 <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
 <link href="{{asset('asset/css/themes/all-themes.css')}}" rel="stylesheet" />
+<link href="{{asset('asset/plugins/css/jquery.datetimepicker.css')}}" rel="stylesheet" /> 
 
-<link href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
+
+
+
